@@ -1,0 +1,110 @@
+on: [pull_request, push]
+
+jobs:
+  build_debian:
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: ["Debug", "Release"]
+        cxx: ["clang++", "g++"]
+    runs-on: ubuntu-latest
+    container:
+      image: debian:bullseye-slim
+    steps:
+      - name: Install system dependencies
+        run: |
+          apt update
+          apt -y full-upgrade
+          apt -y install  \
+              git openssh-client  \
+              cmake clang clang-format clang-tidy lld ninja-build python3
+
+      - name: Dump packages versions
+        run: |
+          apt list --installed
+
+      - name: Checkout
+        run: |
+          git clone "https://github.com/${{ github.repository }}" "./"
+          git checkout "${{ github.sha }}"
+
+      - name: Configure
+        env:
+          CXX: ${{ matrix.cxx }}
+          CXXFLAGS: -fdiagnostics-color=always
+          LDFLAGS: -fdiagnostics-color=always
+        run: |
+          cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -S "." -B "build"
+
+      - name: Build
+        run: |
+          ninja -C "build"
+
+      - name: Test
+        env:
+          ASAN_OPTIONS: check_initialization_order=1:detect_stack_use_after_return=1
+          UBSAN_OPTIONS: print_stacktrace=1
+        run: |
+          cd "build"
+          ctest --verbose
+
+  build_windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: ["Debug", "Release"]
+        cxx: ["cl", "clang++"]
+    runs-on: windows-latest
+    env:
+      VCVARS: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"
+    steps:
+      - name: Install system dependencies
+        shell: cmd
+        run: |
+          choco install nasm
+          if "${{ matrix.cxx }}"=="clang++" (
+            choco install llvm
+          )
+
+      - name: Checkout
+        shell: cmd
+        run: |
+          git clone "https://github.com/${{ github.repository }}" "."
+          git checkout "${{ github.sha }}"
+
+      - name: Patch
+        run: |
+          (Get-Content "cmake/set_defaults.cmake") -replace "-flto=thin", "" | Set-Content "cmake/set_defaults.cmake"
+
+      - name: Configure
+        shell: cmd
+        env:
+          CXX: ${{ matrix.cxx }}
+        run: |
+          call "%VCVARS%"
+          if "${{ matrix.cxx }}"=="cl" (
+            set "CC=cl"
+          )
+          if "${{ matrix.cxx }}"=="clang++" (
+            set "PATH=C:\\Program Files\\LLVM\\bin;%PATH%"
+            set "CC=clang"
+          )
+          cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -S "." -B "build"
+
+      - name: Build
+        shell: cmd
+        run: |
+          call "%VCVARS%"
+          ninja -C "build"
+
+      - name: Test
+        shell: cmd
+        run: |
+          call "%VCVARS%"
+          cd "build"
+          if "${{ matrix.cxx }}"=="clang++" (
+            set "PATH=C:\\Program Files\\LLVM\\bin;%PATH%"
+            ctest --verbose
+          ) else (
+            ctest --verbose -E "check_clang_.*"
+          )
