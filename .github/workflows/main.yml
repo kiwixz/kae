@@ -16,7 +16,7 @@ jobs:
           apt update
           apt -y full-upgrade
           apt -y --no-install-recommends install  \
-              git openssh-client  \
+              git ca-certificates  \
               cmake clang clang-format clang-tidy lld ninja-build python3
 
       - name: Dump packages versions
