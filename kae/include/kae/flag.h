@@ -57,18 +57,18 @@ kae::Flag<T> operator~(T a)
 }
 
 #define DEF_OP(op)                                                                           \
-    template <typename T, typename std::enable_if_t<kae::is_flag<T>, int> = 0>             \
+    template <typename T, typename std::enable_if_t<kae::is_flag<T>, int> = 0>               \
     T& operator op##=(T& a, T b)                                                             \
     {                                                                                        \
         using Underlying = std::underlying_type_t<T>;                                        \
         return a = static_cast<T>(static_cast<Underlying>(a) op static_cast<Underlying>(b)); \
     }                                                                                        \
                                                                                              \
-    template <typename T, typename std::enable_if_t<kae::is_flag<T>, int> = 0>             \
-    kae::Flag<T> operator op(T a, T b)                                                     \
+    template <typename T, typename std::enable_if_t<kae::is_flag<T>, int> = 0>               \
+    kae::Flag<T> operator op(T a, T b)                                                       \
     {                                                                                        \
         using Underlying = std::underlying_type_t<T>;                                        \
-        return kae::Flag<T>{static_cast<Underlying>(a) op static_cast<Underlying>(b)};     \
+        return kae::Flag<T>{static_cast<Underlying>(a) op static_cast<Underlying>(b)};       \
     }
 
 DEF_OP(&)
