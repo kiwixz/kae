@@ -89,7 +89,7 @@ TEST_SUITE("config")
         bool allow_unknown = false;
 
         auto parse = [&](auto&&... args) {
-            std::array<std::string, sizeof...(args) + 1> args_str{"self", std::forward<decltype(args)>(args)...};
+            std::array<std::string, sizeof...(args) + 1> args_str = {{"self", std::forward<decltype(args)>(args)...}};
             std::array<char*, sizeof...(args) + 2> argv;
             for (size_t i = 0; i < args_str.size(); ++i)
                 argv[i] = args_str[i].data();
@@ -128,7 +128,7 @@ TEST_SUITE("config")
         Config conf;
 
         auto parse = [&](auto&&... args) {
-            std::array<std::string, sizeof...(args) + 1> args_str = {"self", std::forward<decltype(args)>(args)...};
+            std::array<std::string, sizeof...(args) + 1> args_str = {{"self", std::forward<decltype(args)>(args)...}};
             std::array<char*, sizeof...(args) + 2> argv;
             for (size_t i = 0; i < args_str.size(); ++i)
                 argv[i] = str_registry.emplace_front(std::move(args_str[i])).data();
