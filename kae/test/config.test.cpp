@@ -111,7 +111,7 @@ TEST_SUITE("config")
         CHECK(parse("-a=1", "-b=2", "abc") == 2);
         CHECK(parse("-a=1", "-b=2") == 1);
         CHECK(parse("--help") == -1);
-            CHECK(parse("-a", "--help") == -1);
+        CHECK(parse("-a", "--help") == -1);
         CHECK(conf.get_raw("a") == "true");
         CHECK(parse("--help", "-a") == -1);
 

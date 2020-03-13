@@ -24,10 +24,14 @@ if (KAE_TESTS)
     find_package("Python3" REQUIRED "Interpreter")
     add_test(NAME "check_clang_format"
         COMMAND "${Python3_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/check_clang_format.py"
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
     )
-    add_test(NAME "check_clang_tidy"
-        COMMAND "${Python3_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/check_clang_tidy.py" "${PROJECT_BINARY_DIR}"
-    )
+    if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)  # only do this check if we are the root project
+        add_test(NAME "check_clang_tidy"
+            COMMAND "${Python3_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/check_clang_tidy.py" "${CMAKE_BINARY_DIR}"
+            WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+        )
+    endif ()
 endif ()
 
 

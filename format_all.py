@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import logging
 import subprocess
 import sys
 
@@ -11,7 +10,7 @@ def format_file(path):
     subprocess.check_call(["clang-format", "-i", path])
 
     def result(progress):
-        logging.info("[%s] formatted: %s", progress, path)
+        print(f"[{progress}] formatted file: {path}")
         return True
 
     return result

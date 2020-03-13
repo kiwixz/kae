@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import logging
 import subprocess
 import sys
 from pathlib import Path
@@ -34,7 +33,7 @@ def check(build_dir, path):
 def main():
     build_dir = sys.argv[1] if len(sys.argv) > 1 else "build"
     if not (Path(build_dir) / "compile_commands.json").exists():
-        logging.critical("compile_commands.json not found, did you pass the correct build directory ?")
+        print("compile_commands.json not found, did you pass the correct build directory ?", file=sys.stderr)
         return 2
 
     return utils.foreach_file(lambda path: check(build_dir, path), lambda path: path.endswith(".cpp"))
