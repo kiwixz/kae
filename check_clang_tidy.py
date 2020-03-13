@@ -12,7 +12,9 @@ def check(build_dir, path):
     errors = None
     try:
         subprocess.check_output(
-            ["clang-tidy", "-quiet", "-p", build_dir, "-warnings-as-errors", "*", path], stderr=subprocess.STDOUT,
+            ["clang-tidy", "-quiet", "-p", build_dir, "-warnings-as-errors", "*", path],
+            stderr=subprocess.STDOUT,
+            text=True,
         )
     except subprocess.CalledProcessError as ex:
         errors = ex.output

@@ -11,7 +11,7 @@ import _utils as utils
 def check(path):
     with open(path) as f:
         original = f.read()
-    formatted = subprocess.check_output(["clang-format", "-assume-filename", path], input=original)
+    formatted = subprocess.check_output(["clang-format", "-assume-filename", path], input=original, text=True)
     diff = difflib.unified_diff(
         original.splitlines(keepends=True), formatted.splitlines(keepends=True), path, "formatted"
     )
