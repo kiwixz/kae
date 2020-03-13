@@ -10,7 +10,7 @@ def format_file(path):
     subprocess.check_call(["clang-format", "-i", path])
 
     def result(progress):
-        print(f"[{progress}] formatted file: {path}")
+        print(f"[{progress}] formatted: {path}")
         return True
 
     return result

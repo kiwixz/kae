@@ -20,10 +20,10 @@ def check(build_dir, path):
 
     def result(progress):
         if errors:
-            print(f"\033[31m[{progress}] errors found for file: {path}\033[0m")
+            print(f"\033[31m[{progress}] failed: {path}\033[0m")
             print(errors)
         else:
-            print(f"\033[32m[{progress}] no errors in file: {path}\033[0m")
+            print(f"\033[32m[{progress}] passed: {path}\033[0m")
 
         return not errors
 

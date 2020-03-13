@@ -18,10 +18,10 @@ def check(path):
 
     def result(progress):
         if patch:
-            print(f"\033[31m[{progress}] differences found for file: {path}\033[0m")
+            print(f"\033[31m[{progress}] failed: {path}\033[0m")
             utils.print_patch(patch)
         else:
-            print(f"\033[32m[{progress}] already formatted: {path}\033[0m")
+            print(f"\033[32m[{progress}] passed: {path}\033[0m")
 
         return not patch
 
