@@ -20,19 +20,18 @@ def check(build_dir, path):
         errors = ex.output
 
     def result(progress):
-        logging.info("[%s] checked clang-tidy: %s", progress, path)
-        if not errors:
-            return True
-        logging.warning("errors found:")
-        print(errors, file=sys.stderr)
-        return False
+        if errors:
+            print(f"\033[31m[{progress}] errors found for file: {path}\033[0m")
+            print(errors)
+        else:
+            print(f"\033[32m[{progress}] no errors in file: {path}\033[0m")
+
+        return not errors
 
     return result
 
 
 def main():
-    utils.init()
-
     build_dir = sys.argv[1] if len(sys.argv) > 1 else "build"
     if not (Path(build_dir) / "compile_commands.json").exists():
         logging.critical("compile_commands.json not found, did you pass the correct build directory ?")

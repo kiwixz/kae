@@ -1,24 +1,12 @@
 #!/usr/bin/env python3
 
-import logging
 import os
 import subprocess
-import sys
 from concurrent.futures import ThreadPoolExecutor
-from typing import Callable
+from typing import Callable, List
 
 
-def init():
-    logging.basicConfig(
-        datefmt="%H:%M:%S",
-        format="[%(asctime)s.%(msecs)d][%(levelname)s][%(thread)d] %(message)s",
-        level=logging.DEBUG,
-        stream=sys.stderr,
-    )
-    os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
-
-def foreach_file(action: Callable[[str], Callable[[str], None]], sieve: Callable[[str], None] = None):
+def foreach_file(action: Callable[[str], Callable[[str], None]], sieve: Callable[[str], bool] = None):
     git_files = subprocess.check_output(["git", "ls-files"], text=True).splitlines()
     with ThreadPoolExecutor((os.cpu_count() or 0) + 2) as executor:
         futures = []
@@ -37,3 +25,17 @@ def foreach_file(action: Callable[[str], Callable[[str], None]], sieve: Callable
                 failures += 1
             count += 1
         return failures
+
+
+def print_patch(patch: List[str]):
+    def colorize(line: str):
+        if line[0] == "+":
+            return f"\033[32m{line}\033[0m"
+
+        if line[0] == "-":
+            return f"\033[31m{line}\033[0m"
+
+        return line
+
+    print("".join(patch[:3]))  # header
+    print("".join(colorize(line) for line in patch[3:]))

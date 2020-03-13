@@ -18,8 +18,6 @@ def format_file(path):
 
 
 def main():
-    utils.init()
-
     def sieve(path):
         return (path.endswith(".cpp") or path.endswith(".h")) and not path.startswith("cmake/")
 

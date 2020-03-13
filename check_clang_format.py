@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import difflib
-import logging
 import subprocess
 import sys
 
@@ -15,23 +14,21 @@ def check(path):
     diff = difflib.unified_diff(
         original.splitlines(keepends=True), formatted.splitlines(keepends=True), path, "formatted"
     )
-    diff_result = list(diff)
+    patch = list(diff)
 
     def result(progress):
-        logging.info("[%s] checked clang-format: %s", progress, path)
-        if not diff_result:
-            return True
-        logging.warning("differences found:")
-        sys.stderr.writelines(diff_result)
-        print()
-        return False
+        if patch:
+            print(f"\033[31m[{progress}] differences found for file: {path}\033[0m")
+            utils.print_patch(patch)
+        else:
+            print(f"\033[32m[{progress}] already formatted: {path}\033[0m")
+
+        return not patch
 
     return result
 
 
 def main():
-    utils.init()
-
     def sieve(path):
         return (path.endswith(".cpp") or path.endswith(".h")) and not path.startswith("cmake/")
 
