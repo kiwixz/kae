@@ -72,10 +72,6 @@ jobs:
           git clone "https://github.com/${{ github.repository }}" "."
           git checkout "${{ github.sha }}"
 
-      - name: Patch
-        run: |
-          (Get-Content "cmake/set_defaults.cmake") -replace "-flto=thin", "" | Set-Content "cmake/set_defaults.cmake"
-
       - name: Configure
         shell: cmd
         env:
