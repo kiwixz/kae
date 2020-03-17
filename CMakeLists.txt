@@ -1,23 +1,35 @@
 cmake_minimum_required(VERSION 3.12)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
-include("set_defaults")
+include("cpp_compiler")
+include("cpp_flags")
+include("cpp_warnings")
 
 
 option(KAE_TESTS "Build tests" ON)
+option(KAE_AUTO_COMPILERS "Automatically override compilers" ON)
+option(KAE_AUTO_FLAGS "Automatically override flags" ON)
 
 
 set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "")
-set(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS}" CACHE STRING "")
-set_defaults_tools_cpp()
+
+if (KAE_AUTO_COMPILERS)
+    cpp_compiler_auto()
+endif ()
 
 project("kae"
     VERSION 0.0.0
     LANGUAGES CXX
 )
 
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set_defaults_flags_cpp()
+if (KAE_AUTO_FLAGS)
+    cpp_flags_auto()
+    cpp_warnings_auto()
+endif ()
 
 if (KAE_TESTS)
     enable_testing()

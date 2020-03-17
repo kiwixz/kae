@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-include("test_cpp")
+include("cpp_test")
 
 set(target "kae")
 
@@ -9,16 +9,16 @@ target_include_directories("${target}" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/inclu
 
 if (KAE_TESTS)
     file(GLOB_RECURSE test_src CONFIGURE_DEPENDS "test/*.cpp")
-    test_cpp("${target}" ${test_src})
+    cpp_test("${target}" ${test_src})
 endif ()
 
 
-target_link_libraries("${target}"
+target_link_libraries("${target}" PUBLIC
     "fmt::fmt"
 )
 
 if (WIN32)
-    target_link_libraries("${target}"
+    target_link_libraries("${target}" PUBLIC
         "Dbghelp"
     )
 endif ()

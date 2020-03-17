@@ -27,9 +27,9 @@ endfunction ()
 
 
 function (system_include_dirs target)
-    get_target_property(inc "${target}" INTERFACE_INCLUDE_DIRECTORIES)
+    get_target_property(incs "${target}" INTERFACE_INCLUDE_DIRECTORIES)
     set_target_properties("${target}" PROPERTIES
-        INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "${inc}"
+        INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "${incs}"
     )
 endfunction ()
 
@@ -63,20 +63,21 @@ function (_apply_patches dir)
 endfunction ()
 
 
-macro (_suppress_warnings_cpp)
-    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w")
-    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-        string(REGEX REPLACE "[/-]W([0-4]|all)" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0")
+function (_suppress_warnings_cpp)
+    get_directory_property(opts COMPILE_OPTIONS)
 
-        string(REGEX REPLACE "[/-]W([0-4]|all)" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W0")
+    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+        list(FILTER opts EXCLUDE REGEX "^-W")
+        list(APPEND opts "-w")
+    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+        list(FILTER opts EXCLUDE REGEX "^[/-]W")
+        list(APPEND opts "/W0")
     endif ()
+
+    set_directory_properties(PROPERTIES COMPILE_OPTIONS "${opts}")
 
     if (WIN32)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_CRT_SECURE_NO_WARNINGS")
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_CRT_SECURE_NO_WARNINGS")
+        add_compile_definitions("_CRT_SECURE_NO_WARNINGS")
+        add_compile_definitions("_CRT_SECURE_NO_WARNINGS")
     endif ()
-endmacro ()
+endfunction ()
