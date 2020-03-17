@@ -7,6 +7,7 @@ from typing import Callable, List
 
 
 def foreach_file(action: Callable[[str], Callable[[str], None]], sieve: Callable[[str], bool] = None):
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
     git_files = subprocess.check_output(["git", "ls-files"], text=True).splitlines()
     with ThreadPoolExecutor((os.cpu_count() or 0) + 2) as executor:
         futures = []

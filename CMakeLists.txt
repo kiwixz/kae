@@ -5,12 +5,22 @@ include("cpp_flags")
 include("cpp_warnings")
 
 
-option(KAE_TESTS "Build tests" ON)
-option(KAE_AUTO_COMPILERS "Automatically override compilers" ON)
-option(KAE_AUTO_FLAGS "Automatically override flags" ON)
+if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    set(IS_ROOT_LISTS ON)
+else ()
+    set(IS_ROOT_LISTS OFF)
+endif ()
 
 
-set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "")
+option(KAE_TESTS "Build tests" ${IS_ROOT_LISTS})
+option(KAE_AUTO_COMPILERS "Automatically override compilers" ${IS_ROOT_LISTS})
+option(KAE_AUTO_FLAGS "Automatically override flags" ${IS_ROOT_LISTS})
+
+
+if (IS_ROOT_LISTS AND NOT CMAKE_BUILD_TYPE)
+    message("Defaulting CMAKE_BUILD_TYPE to Debug")
+    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "")
+endif ()
 
 if (KAE_AUTO_COMPILERS)
     cpp_compiler_auto()
@@ -33,15 +43,13 @@ endif ()
 
 if (KAE_TESTS)
     enable_testing()
-    find_package("Python3" REQUIRED "Interpreter")
-    add_test(NAME "check_clang_format"
-        COMMAND "${Python3_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/check_clang_format.py"
-        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-    )
-    if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)  # only do this check if we are the root project
+    if (IS_ROOT_LISTS)
+        find_package("Python3" REQUIRED "Interpreter")
+        add_test(NAME "check_clang_format"
+            COMMAND "${Python3_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/check_clang_format.py"
+        )
         add_test(NAME "check_clang_tidy"
             COMMAND "${Python3_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/check_clang_tidy.py" "${CMAKE_BINARY_DIR}"
-            WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
         )
     endif ()
 endif ()
