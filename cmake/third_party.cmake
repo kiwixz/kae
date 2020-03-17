@@ -1,7 +1,7 @@
 include(FetchContent)
 
 function (third_party name)
-    cmake_parse_arguments(ARG "" "REPO;TAG;URL" "PATCHES" ${ARGN})
+    cmake_parse_arguments(ARG "DONT_RUN_CMAKE" "REPO;TAG;URL" "PATCHES" ${ARGN})
 
     if (ARG_REPO AND ARG_TAG AND NOT ARG_URL)
         FetchContent_Declare("${name}"
@@ -18,8 +18,10 @@ function (third_party name)
     if (NOT "${name}_POPULATED")
         FetchContent_Populate("${name}")
         _apply_patches("${${name}_SOURCE_DIR}" PATCHES ${ARG_PATCHES})
-        _suppress_warnings_cpp()
-        add_subdirectory("${${name}_SOURCE_DIR}" "${${name}_BINARY_DIR}")
+        if (NOT ARG_DONT_RUN_CMAKE)
+            _suppress_warnings_cpp()
+            add_subdirectory("${${name}_SOURCE_DIR}" "${${name}_BINARY_DIR}")
+        endif ()
     endif()
 endfunction ()
 
