@@ -210,6 +210,14 @@ std::vector<StackFrame> stacktrace()
 
 namespace {
 
+Exception make_errcode_exception(std::string_view what, int errcode)
+{
+    std::vector<char> buffer;
+    buffer.resize(4096);
+    const char* errcode_what = strerror_r(errcode, buffer.data(), buffer.size());
+    return MAKE_EXCEPTION("{} ({})", what, errcode_what);
+}
+
 void free_charpp(char** ptr)
 {
     return free(ptr);
@@ -249,14 +257,16 @@ std::string thread_name()
 {
     std::string r;
     r.resize(16);
-    pthread_getname_np(pthread_self(), r.data(), r.size());
+    if (int err = pthread_getname_np(pthread_self(), r.data(), r.size()))
+        throw make_errcode_exception("could not get thread name", err);
     r.resize(r.find('\0'));
     return r;
 }
 
 void set_thread_name(const std::string& name)
 {
-    pthread_setname_np(pthread_self(), name.c_str());
+    if (int err = pthread_setname_np(pthread_self(), name.c_str()))
+        throw make_errcode_exception("could not set thread name", err);
 }
 
 std::vector<StackFrame> stacktrace()
