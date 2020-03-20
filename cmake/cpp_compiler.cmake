@@ -1,9 +1,10 @@
 function (cpp_compiler_auto)
-    if ("$ENV{CC}$ENV{CXX}" STREQUAL "")
+    if (NOT (CMAKE_C_COMPILER OR CMAKE_CXX_COMPILER) AND "$ENV{CC}$ENV{CXX}" STREQUAL "")
         find_program(clang_PATH "clang")
-        if (clang_PATH)
+        find_program(clangxx_PATH "clang++")
+        if (clang_PATH AND clangxx_PATH)
             set(CMAKE_C_COMPILER "${clang_PATH}" CACHE FILEPATH "")
-            set(CMAKE_CXX_COMPILER "${clang_PATH}++" CACHE FILEPATH "")
+            set(CMAKE_CXX_COMPILER "${clangxx_PATH}" CACHE FILEPATH "")
         else ()
             message(WARNING "could not find clang compiler")
 
