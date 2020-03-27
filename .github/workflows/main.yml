@@ -17,7 +17,9 @@ jobs:
           apt -y full-upgrade
           apt -y --no-install-recommends install  \
               git ca-certificates  \
-              cmake clang clang-format clang-tidy g++ lld nasm ninja-build python3
+              cmake clang clang-format-9 clang-tidy-9 g++ lld nasm ninja-build python3
+          ln -s "clang-format-9" "/usr/bin/clang-format"
+          ln -s "clang-tidy-9" "/usr/bin/clang-tidy"
 
       - name: Dump packages versions
         run: |
@@ -68,7 +70,7 @@ jobs:
         run: |
           choco install nasm
           if "${{ matrix.cxx }}"=="clang++" (
-            choco install llvm
+            choco install llvm --version=9.0.1
           )
 
       - name: Checkout
