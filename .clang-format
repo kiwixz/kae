@@ -63,7 +63,7 @@ DisableFormat: false
 # ExperimentalAutoDetectBinPacking: false  # experimental
 FixNamespaceComments: true
 ForEachMacros: []
-IncludeBlocks: Regroup
+IncludeBlocks: Preserve
 IncludeCategories:
   - Regex: '^<[^>.]+>$'
     Priority: 1
