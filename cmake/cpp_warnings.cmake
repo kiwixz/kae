@@ -34,6 +34,7 @@ function (cpp_warnings_auto)
             # false positives
             "/wd4355"
             "/wd4868"
+            "/wd5204"
         )
 
         add_compile_options("/experimental:external" "/external:W0" "/external:env:INCLUDE")
