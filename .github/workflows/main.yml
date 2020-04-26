@@ -26,7 +26,7 @@ jobs:
           ln -s "clang++-$LLVM_VERSION" "/usr/bin/clang++"
           ln -s "clang-format-$LLVM_VERSION" "/usr/bin/clang-format"
           ln -s "clang-tidy-$LLVM_VERSION" "/usr/bin/clang-tidy"
-          ln -s "lld-$LLVM_VERSION" "/usr/bin/lld"
+          ln -s "ld.lld-$LLVM_VERSION" "/usr/bin/ld.lld"
 
       - name: Dump packages versions
         run: |
