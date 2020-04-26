@@ -1,5 +1,8 @@
 on: [pull_request, push]
 
+env:
+  LLVM_VERSION: "10"
+
 jobs:
   build_debian:
     strategy:
@@ -17,9 +20,13 @@ jobs:
           apt -y full-upgrade
           apt -y --no-install-recommends install  \
               git ca-certificates  \
-              cmake clang clang-format-9 clang-tidy-9 g++ lld nasm ninja-build python3
-          ln -s "clang-format-9" "/usr/bin/clang-format"
-          ln -s "clang-tidy-9" "/usr/bin/clang-tidy"
+              cmake g++ nasm ninja-build python3  \
+              clang-$LLVM_VERSION clang-format-$LLVM_VERSION clang-tidy-$LLVM_VERSION lld-$LLVM_VERSION
+          ln -s "clang-$LLVM_VERSION" "/usr/bin/clang"
+          ln -s "clang++-$LLVM_VERSION" "/usr/bin/clang++"
+          ln -s "clang-format-$LLVM_VERSION" "/usr/bin/clang-format"
+          ln -s "clang-tidy-$LLVM_VERSION" "/usr/bin/clang-tidy"
+          ln -s "lld-$LLVM_VERSION" "/usr/bin/lld"
 
       - name: Dump packages versions
         run: |
@@ -70,7 +77,7 @@ jobs:
         run: |
           choco install nasm
           if "${{ matrix.cxx }}"=="clang++" (
-            choco install llvm --version=9.0.1
+            choco install llvm --version=%LLVM_VERSION%.0.0
           )
 
       - name: Checkout
