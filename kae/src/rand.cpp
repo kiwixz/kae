@@ -61,8 +61,8 @@ double RandF::operator()()
     s[2] ^= t;
     s[3] = rotl(s[3], 45);
 
-    uint64_t rnd = result_plus >> 3;     // last 3 bits are not really random
-    return rnd / 2305843009213694001.0;  // divide by 2^61+1 to map to [0,1)
+    uint64_t rnd = result_plus >> 3;                          // last 3 bits are not really random
+    return static_cast<double>(rnd) / 2305843009213694001.0;  // divide by 2^61+1 to map to [0,1)
 }
 
 }  // namespace kae

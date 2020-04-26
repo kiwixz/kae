@@ -58,7 +58,7 @@ T Config::get(const std::string& key) const
         if (value.length() == 0)
             throw MAKE_EXCEPTION("key '{}': expected numeric value, got empty string", key);
 
-        char* end;
+        char* end = nullptr;
         T result;
         if constexpr (std::is_integral_v<T>) {
             if constexpr (std::is_unsigned_v<T>)

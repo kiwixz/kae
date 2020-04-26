@@ -29,7 +29,7 @@ TEST_SUITE("circular")
             CHECK(const_c.front() == *list.begin());
             CHECK(const_c.back() == *(list.end() - 1));
 
-            auto it = list.begin();
+            const int* it = list.begin();
             for (int i : const_c) {
                 CHECK(i == *it);
                 ++it;
@@ -118,7 +118,7 @@ TEST_SUITE("circular")
     {
         auto eq = [](const Circular<int, 3>& circular, const std::initializer_list<int>& list) {
             CHECK(circular.size() == list.size());
-            auto it = list.begin();
+            const int* it = list.begin();
             for (int i : circular) {
                 CHECK(i == *it);
                 ++it;
@@ -127,7 +127,7 @@ TEST_SUITE("circular")
 
         auto eqp = [](const Circular<std::unique_ptr<int>, 3>& circular, const std::initializer_list<int>& list) {
             CHECK(circular.size() == list.size());
-            auto it = list.begin();
+            const int* it = list.begin();
             for (const std::unique_ptr<int>& i : circular) {
                 CHECK(*i == *it);
                 ++it;

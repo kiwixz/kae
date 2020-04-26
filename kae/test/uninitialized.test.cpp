@@ -40,7 +40,7 @@ TEST_SUITE("uninitialized")
             noexcept = delete;
             S& operator=(S&&) noexcept = delete;
 
-            int i()
+            int i() const
             {
                 return i_;
             }

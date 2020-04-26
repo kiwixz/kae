@@ -42,7 +42,7 @@ TEST_SUITE("scope_exit")
 
     TEST_CASE("empty")
     {
-        ScopeExit{};
+        (void)ScopeExit{};
     }
 }
 
