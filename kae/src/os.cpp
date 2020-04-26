@@ -232,7 +232,7 @@ std::filesystem::path app_directory(std::string_view app_name)
     if (!base) {
         buffer.resize(4096);
         passwd pw;
-        passwd* result;
+        passwd* result = nullptr;
         while (getpwuid_r(getuid(), &pw, buffer.data(), buffer.size(), &result) == ERANGE)
             buffer.resize(buffer.size() * 2);
         if (!result)
