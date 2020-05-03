@@ -24,7 +24,7 @@
           "code": 4
         },
         {
-          "regexp": "^  (.*)$",
+          "regexp": "^(?:|  (.*))$",
           "message": 0,
           "loop": true
         }
@@ -38,7 +38,7 @@
           "severity": 1
         },
         {
-          "regexp": "^  (.*)$",
+          "regexp": "^(?:|  (.*))$",
           "message": 0,
           "loop": true
         }
