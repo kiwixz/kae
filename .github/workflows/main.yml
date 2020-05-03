@@ -37,6 +37,10 @@ jobs:
           git clone "https://github.com/${{ github.repository }}" "./"
           git checkout "${{ github.sha }}"
 
+      - name: Register problem matchers
+        run: |
+          echo "::add-matcher::.github/problem_matchers.json"
+
       - name: Configure
         env:
           CXX: ${{ matrix.cxx }}
@@ -91,6 +95,11 @@ jobs:
         run: |
           git clone "https://github.com/${{ github.repository }}" "."
           git checkout "${{ github.sha }}"
+
+      - name: Register problem matchers
+        shell: cmd
+        run: |
+          echo ::add-matcher::.github/problem_matchers.json
 
       - name: "Patch: disable LTO"  # cannot reproduce locally
         run: |
