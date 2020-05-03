@@ -8,8 +8,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build_type: ["Debug", "Release"]
-        cxx: ["clang++", "g++"]
+        build_type: [Debug, Release]
+        cc: [clang, gcc]
+        include:
+          - cc: clang
+            cxx: clang++
+          - cc: gcc
+            cxx: g++
     runs-on: ubuntu-latest
     container:
       image: debian:bullseye-slim
@@ -43,15 +48,11 @@ jobs:
 
       - name: Configure
         env:
+          CC: ${{ matrix.cc }}
           CXX: ${{ matrix.cxx }}
           CXXFLAGS: -fdiagnostics-color=always
           LDFLAGS: -fdiagnostics-color=always
         run: |
-          if [ "${{ matrix.cxx }}" = "clang++" ]; then
-            export CC="clang"
-          elif [ "${{ matrix.cxx }}" = "g++" ]; then
-            export CC="gcc"
-          fi
           cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -S "." -B "build"
 
       - name: Build
@@ -76,8 +77,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build_type: ["Debug", "Release"]
-        cxx: ["clang++", "cl"]
+        build_type: [Debug, Release]
+        cc: [clang, cl]
+        include:
+          - cc: clang
+            cxx: clang++
+          - cc: cl
+            cxx: cl
     runs-on: windows-latest
     env:
       VCVARS: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"
@@ -86,7 +92,7 @@ jobs:
         shell: cmd
         run: |
           choco install nasm
-          if "${{ matrix.cxx }}"=="clang++" (
+          if "${{ matrix.cc }}"=="clang" (
             choco install llvm --version=%LLVM_VERSION%.0.0
           )
 
@@ -108,16 +114,11 @@ jobs:
       - name: Configure
         shell: cmd
         env:
+          CC: ${{ matrix.cc }}
           CXX: ${{ matrix.cxx }}
         run: |
           call "%VCVARS%"
-          if "${{ matrix.cxx }}"=="cl" (
-            set "CC=cl"
-          )
-          if "${{ matrix.cxx }}"=="clang++" (
-            set "PATH=C:\\Program Files\\LLVM\\bin;%PATH%"
-            set "CC=clang"
-          )
+          set "PATH=C:\\Program Files\\LLVM\\bin;%PATH%"
           cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -S "." -B "build"
 
       - name: Build
@@ -137,7 +138,7 @@ jobs:
         run: |
           call "%VCVARS%"
           cd "build"
-          if "${{ matrix.cxx }}"=="clang++" (
+          if "${{ matrix.cc }}"=="clang" (
             set "PATH=C:\\Program Files\\LLVM\\bin;%PATH%"
             ctest --verbose
           ) else (
