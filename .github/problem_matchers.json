@@ -29,6 +29,20 @@
           "loop": true
         }
       ]
+    },
+    {
+      "owner": "cmake_noorigin",
+      "pattern": [
+        {
+          "regexp": "^CMake (Warning|Error):$",
+          "severity": 1
+        },
+        {
+          "regexp": "^  (.*)$",
+          "message": 0,
+          "loop": true
+        }
+      ]
     }
   ]
 }
