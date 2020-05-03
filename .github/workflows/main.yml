@@ -54,6 +54,11 @@ jobs:
         run: |
           ninja -C "build"
 
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          path: build/kae/kae_test
+
       - name: Test
         env:
           ASAN_OPTIONS: check_initialization_order=1:detect_stack_use_after_return=1
@@ -110,6 +115,11 @@ jobs:
         run: |
           call "%VCVARS%"
           ninja -C "build"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          path: build/kae/kae_test.exe
 
       - name: Test
         shell: cmd
