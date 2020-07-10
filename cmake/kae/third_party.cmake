@@ -20,11 +20,20 @@ function (third_party name)
         return()
     endif()
 
+    message(STATUS "fetching ${name}")
     FetchContent_Populate("${name}")
-    _apply_patches("${${name}_SOURCE_DIR}" PATCHES ${ARG_PATCHES})
+
+    if (ARG_PATCHES)
+        message(STATUS "patching ${name}")
+        _apply_patches("${${name}_SOURCE_DIR}" PATCHES ${ARG_PATCHES})
+    endif ()
+
     if (NOT ARG_DONT_RUN_CMAKE)
+        message(STATUS "adding ${name}")
         _suppress_warnings_cpp()
+        list(APPEND CMAKE_MESSAGE_CONTEXT "${name}")
         add_subdirectory("${${name}_SOURCE_DIR}" "${${name}_BINARY_DIR}")
+        list(POP_BACK CMAKE_MESSAGE_CONTEXT)
     endif ()
 endfunction ()
 
