@@ -1,4 +1,4 @@
-set(self_dir "${CMAKE_CURRENT_LIST_DIR}")
+set(kae_cmake_dir "${CMAKE_CURRENT_LIST_DIR}")
 
 function (file_embed prefix name file)
     cmake_parse_arguments(ARG "" "" "DEPENDS" ${ARGN})
@@ -14,7 +14,7 @@ function (file_embed prefix name file)
 
     set(target "${prefix}_embed_${name}")
 
-    configure_file("${self_dir}/file_embed.asm" "${CMAKE_CURRENT_BINARY_DIR}/${target}/source.asm" @ONLY)
+    configure_file("${kae_cmake_dir}/file_embed.asm" "${CMAKE_CURRENT_BINARY_DIR}/${target}/source.asm" @ONLY)
     add_library("${target}" STATIC "${CMAKE_CURRENT_BINARY_DIR}/${target}/source.asm")
     set_target_properties("${target}" PROPERTIES LINKER_LANGUAGE C)
 
@@ -22,7 +22,7 @@ function (file_embed prefix name file)
         add_dependencies("${target}" ${ARG_DEPENDS})
     endif ()
 
-    configure_file("${self_dir}/file_embed.h" "${CMAKE_CURRENT_BINARY_DIR}/${target}/include/embed/${name}.h" @ONLY)
+    configure_file("${kae_cmake_dir}/file_embed.h" "${CMAKE_CURRENT_BINARY_DIR}/${target}/include/embed/${name}.h" @ONLY)
     target_include_directories("${target}" BEFORE INTERFACE "${CMAKE_CURRENT_BINARY_DIR}/${target}/include")
 
     set(${name}_EMBED "${target}" PARENT_SCOPE)
