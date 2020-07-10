@@ -4,6 +4,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 include("kae/cpp_compiler")
 include("kae/cpp_flags")
 include("kae/cpp_warnings")
+include("kae/set_default")
 
 
 if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
@@ -17,15 +18,11 @@ option(KAE_TESTS "Build tests" ${IS_ROOT_LIST})
 option(KAE_AUTO_COMPILERS "Automatically override compilers" ${IS_ROOT_LIST})
 option(KAE_AUTO_FLAGS "Automatically override flags" ${IS_ROOT_LIST})
 
+if (IS_ROOT_LIST)
+    set_default(CMAKE_BUILD_TYPE "Debug" STRING)
+    set_default(CMAKE_MESSAGE_CONTEXT_SHOW ON BOOL)
+endif ()
 
-if (IS_ROOT_LIST AND NOT CMAKE_BUILD_TYPE)
-    message(STATUS "defaulting CMAKE_BUILD_TYPE to Debug")
-    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "")
-endif ()
-if (IS_ROOT_LIST AND NOT CMAKE_MESSAGE_CONTEXT_SHOW)
-    message(STATUS "defaulting CMAKE_MESSAGE_CONTEXT_SHOW to ON")
-    set(CMAKE_MESSAGE_CONTEXT_SHOW ON CACHE BOOL "")
-endif ()
 
 if (KAE_AUTO_COMPILERS)
     cpp_compiler_auto()
