@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-include("cpp_test")
+include("kae/cpp_test")
 
 set(target "kae")
 

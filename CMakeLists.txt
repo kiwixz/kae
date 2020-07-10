@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.12)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
-include("cpp_compiler")
-include("cpp_flags")
-include("cpp_warnings")
+include("kae/cpp_compiler")
+include("kae/cpp_flags")
+include("kae/cpp_warnings")
 
 
 if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
@@ -18,7 +18,7 @@ option(KAE_AUTO_FLAGS "Automatically override flags" ${IS_ROOT_LISTS})
 
 
 if (IS_ROOT_LISTS AND NOT CMAKE_BUILD_TYPE)
-    message("Defaulting CMAKE_BUILD_TYPE to Debug")
+    message(STATUS "Defaulting CMAKE_BUILD_TYPE to Debug")
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "")
 endif ()
 
@@ -58,4 +58,4 @@ endif ()
 add_subdirectory("third_party/doctest")
 add_subdirectory("third_party/fmt")
 
-add_subdirectory("${PROJECT_NAME}")
+add_subdirectory("kae")
