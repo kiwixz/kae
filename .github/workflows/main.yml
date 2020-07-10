@@ -108,8 +108,9 @@ jobs:
           echo ::add-matcher::.github/problem_matchers.json
 
       - name: "Patch: disable LTO"  # cannot reproduce locally
+        if: matrix.cxx == 'clang++' && matrix.build_type == 'Release'
         run: |
-          (Get-Content "cmake/cpp_flags.cmake") -replace "-flto=thin", "" | Set-Content "cmake/cpp_flags.cmake"
+          (Get-Content "cmake/kae/cpp_flags.cmake") -replace "-flto=thin", "" | Set-Content "cmake/kae/cpp_flags.cmake"
 
       - name: Configure
         shell: cmd
