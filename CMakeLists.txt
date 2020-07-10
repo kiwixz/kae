@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 include("kae/cpp_compiler")
 include("kae/cpp_flags")
@@ -18,7 +19,7 @@ option(KAE_AUTO_FLAGS "Automatically override flags" ${IS_ROOT_LISTS})
 
 
 if (IS_ROOT_LISTS AND NOT CMAKE_BUILD_TYPE)
-    message(STATUS "Defaulting CMAKE_BUILD_TYPE to Debug")
+    message(STATUS "defaulting CMAKE_BUILD_TYPE to Debug")
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "")
 endif ()
 
