@@ -22,6 +22,9 @@ option(KAE_AUTO_FLAGS "Automatically override flags" ${IS_ROOT_LIST})
 if (IS_ROOT_LIST)
     set_default(CMAKE_BUILD_TYPE "Debug" STRING)
     set_default(CMAKE_MESSAGE_CONTEXT_SHOW ON BOOL)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 endif ()
 
 

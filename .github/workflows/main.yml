@@ -63,7 +63,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: deb-${{ matrix.cc }}-${{ matrix.build_type }}
-          path: build/kae/kae_test
+          path: build/bin
 
       - name: Test
         env:
@@ -132,7 +132,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: win-${{ matrix.cc }}-${{ matrix.build_type }}
-          path: build/kae/kae_test.exe
+          path: build/bin
 
       - name: Test
         shell: cmd
