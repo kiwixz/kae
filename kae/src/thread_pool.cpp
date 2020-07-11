@@ -9,14 +9,7 @@ ThreadPool::ThreadPool(size_t nr_threads)
 
 ThreadPool::~ThreadPool()
 {
-    {
-        std::lock_guard lock{tasks_mutex_};
-        stopping_ = true;
-    }
-
-    tasks_condvar_.notify_all();
-    for (std::thread& worker : workers_)
-        worker.join();
+    join();
 }
 
 size_t ThreadPool::size() const
@@ -43,6 +36,19 @@ void ThreadPool::extend(size_t nr_threads)
                 task();
             }
         });
+}
+
+void ThreadPool::join()
+{
+    {
+        std::lock_guard lock{tasks_mutex_};
+        stopping_ = true;
+    }
+
+    tasks_condvar_.notify_all();
+    for (std::thread& worker : workers_)
+        worker.join();
+    workers_.clear();
 }
 
 }  // namespace kae

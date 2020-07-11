@@ -24,6 +24,7 @@ struct ThreadPool {
 
     size_t size() const;
     void extend(size_t nr_threads);
+    void join();
 
     /// Callable only needs to be moveable, but args must be copyable.
     template <typename T, typename... Args>
