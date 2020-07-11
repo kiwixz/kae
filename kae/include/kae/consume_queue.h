@@ -75,7 +75,7 @@ std::optional<TElement> ConsumeQueue<TElement>::pop()
     });
     if (ended_ && queue_.empty())
         return {};
-    Element e = std::move(queue_.front());
+    std::optional<Element> e = std::move(queue_.front());
     queue_.pop();
 
     lock.unlock();
