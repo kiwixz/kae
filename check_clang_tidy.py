@@ -1,42 +1,53 @@
 #!/usr/bin/env python3
 
+import multiprocessing
+import os
 import subprocess
 import sys
-from pathlib import Path
-
-import _utils as utils
 
 
-def check(build_dir, path):
-    errors = None
+def check_file(path):
     try:
         subprocess.check_output(
-            ["clang-tidy", "-quiet", "-warnings-as-errors=*", "-p", build_dir, path],
-            stderr=subprocess.STDOUT,
-            text=True,
+            ["clang-tidy", "-quiet", "-warnings-as-errors=*", "-p", "build", path], stderr=subprocess.STDOUT, text=True,
         )
+        return path, None
     except subprocess.CalledProcessError as ex:
-        errors = ex.output
-
-    def result(progress):
-        if errors:
-            print(f"\033[31m[{progress}] failed: {path}\033[0m")
-            print(errors)
-        else:
-            print(f"\033[32m[{progress}] passed: {path}\033[0m")
-
-        return not errors
-
-    return result
+        return path, ex.output
 
 
 def main():
-    build_dir = sys.argv[1] if len(sys.argv) > 1 else "build"
-    if not (Path(build_dir) / "compile_commands.json").exists():
-        print("compile_commands.json not found, did you pass the correct build directory ?", file=sys.stderr)
-        return 2
+    if len(sys.argv) != 2:
+        print(f"Usage: {sys.argv[0]} directory")
+        return 1
 
-    return utils.foreach_file(lambda path: check(build_dir, path), lambda path: path.endswith(".cpp"))
+    os.chdir(sys.argv[1])
+
+    if not os.path.exists("build/compile_commands.json"):
+        print("error: could not find compile_commands.json")
+        return 1
+
+    git_files = subprocess.check_output(["git", "ls-files"], text=True).splitlines()
+    todo_files = [f for f in git_files if f.endswith(".cpp") and not f.startswith("cmake/")]
+
+    total = len(todo_files)
+    done = 0
+    failed = 0
+    with multiprocessing.Pool(os.cpu_count() + 2) as p:
+        for path, errors in p.imap_unordered(check_file, todo_files):
+            done += 1
+            if errors:
+                print(f"\033[31;1m[{done}/{total}] failed: {path}\033[0m")
+                print(errors)
+                failed += 1
+            else:
+                print(f"[{done}/{total}] passed: {path}")
+
+    if failed:
+        print(f"\n\033[31;1m{failed} file(s) failed\033[0m")
+        return 1
+
+    return 0
 
 
 if __name__ == "__main__":
