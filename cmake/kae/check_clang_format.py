@@ -40,7 +40,7 @@ def main():
     total = len(todo_files)
     done = 0
     failed = 0
-    with multiprocessing.Pool(os.cpu_count() + 2) as p:
+    with multiprocessing.Pool(min(total, os.cpu_count() + 2)) as p:
         for path, patch in p.imap_unordered(check_file, todo_files):
             done += 1
             if patch:
