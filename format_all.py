@@ -1,27 +1,23 @@
 #!/usr/bin/env python3
 
+import multiprocessing
+import os
 import subprocess
-import sys
-
-import _utils as utils
 
 
 def format_file(path):
     subprocess.check_call(["clang-format", "-i", path])
 
-    def result(progress):
-        print(f"[{progress}] formatted: {path}")
-        return True
-
-    return result
-
 
 def main():
-    def sieve(path):
-        return (path.endswith(".cpp") or path.endswith(".h")) and not path.startswith("cmake/")
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-    return utils.foreach_file(format_file, sieve)
+    git_files = subprocess.check_output(["git", "ls-files"], text=True).splitlines()
+    todo_files = [f for f in git_files if (f.endswith(".cpp") or f.endswith(".h")) and not f.startswith("cmake/")]
+    with multiprocessing.Pool(os.cpu_count() + 2) as p:
+        p.map(format_file, todo_files)
+    print(f"formatted {len(todo_files)} files")
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()
