@@ -143,5 +143,5 @@ jobs:
             set "PATH=C:\\Program Files\\LLVM\\bin;%PATH%"
             ctest --verbose
           ) else (
-            ctest --verbose -E "check_clang_.*"
+            ctest --verbose -E "clang_.*"
           )
