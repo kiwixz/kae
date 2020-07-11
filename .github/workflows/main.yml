@@ -59,6 +59,13 @@ jobs:
         run: |
           ninja -C "build"
 
+      - name: On failure, upload build directory
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: deb-${{ matrix.cc }}-${{ matrix.build_type }}-failed
+          path: build
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -91,10 +98,16 @@ jobs:
       - name: Install system dependencies
         shell: cmd
         run: |
-          choco install nasm
           if "${{ matrix.cc }}"=="clang" (
             choco install llvm --version=%LLVM_VERSION%.0.0
           )
+
+      - name: Dump tools versions
+        run: |
+          call "%VCVARS%"
+          git --version
+          cmake --version
+          ninja --version
 
       - name: Checkout
         shell: cmd
@@ -106,11 +119,6 @@ jobs:
         shell: cmd
         run: |
           echo ::add-matcher::.github/problem_matchers.json
-
-      - name: "Patch: disable LTO"  # cannot reproduce locally
-        if: matrix.cxx == 'clang++' && matrix.build_type == 'Release'
-        run: |
-          (Get-Content "cmake/kae/cpp_flags.cmake") -replace "-flto=thin", "" | Set-Content "cmake/kae/cpp_flags.cmake"
 
       - name: Configure
         shell: cmd
@@ -128,6 +136,13 @@ jobs:
           call "%VCVARS%"
           ninja -C "build"
 
+      - name: On failure, upload build directory
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: win-${{ matrix.cc }}-${{ matrix.build_type }}-failed
+          path: build
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -137,7 +152,6 @@ jobs:
       - name: Test
         shell: cmd
         run: |
-          call "%VCVARS%"
           cd "build"
           if "${{ matrix.cc }}"=="clang" (
             set "PATH=C:\\Program Files\\LLVM\\bin;%PATH%"
