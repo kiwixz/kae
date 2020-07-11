@@ -27,9 +27,9 @@ ScopeExit& ScopeExit::operator=(ScopeExit&& other) noexcept
     return *this;
 }
 
-std::function<void()> ScopeExit::release()
+kae::UniqueFunction<void()> ScopeExit::release()
 {
-    std::function<void()> f = std::move(function_);
+    kae::UniqueFunction<void()> f = std::move(function_);
     function_ = {};
     return f;
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <functional>
+#include "kae/function.h"
 
 namespace kae {
 
@@ -15,10 +15,10 @@ struct [[nodiscard]] ScopeExit
     ScopeExit(ScopeExit && other) noexcept;
     ScopeExit& operator=(ScopeExit&& other) noexcept;
 
-    std::function<void()> release();
+    kae::UniqueFunction<void()> release();
 
 private:
-    std::function<void()> function_;
+    kae::UniqueFunction<void()> function_;
 };
 
 }  // namespace kae
