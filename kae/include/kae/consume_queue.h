@@ -58,8 +58,11 @@ void ConsumeQueue<TElement>::push(Element element)
 template <typename TElement>
 void ConsumeQueue<TElement>::end()
 {
-    std::lock_guard lock{mutex_};
-    ended_ = true;
+    {
+        std::lock_guard lock{mutex_};
+        ended_ = true;
+    }
+    condvar_pop_.notify_all();
 }
 
 template <typename TElement>
