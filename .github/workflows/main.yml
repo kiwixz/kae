@@ -103,6 +103,7 @@ jobs:
           )
 
       - name: Dump tools versions
+        shell: cmd
         run: |
           call "%VCVARS%"
           git --version
