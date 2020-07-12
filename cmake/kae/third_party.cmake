@@ -76,20 +76,18 @@ endfunction ()
 
 
 function (_suppress_warnings_cpp)
-    get_directory_property(opts COMPILE_OPTIONS)
-
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-        list(FILTER opts EXCLUDE REGEX "^-W")
-        list(APPEND opts "-w")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w" PARENT_SCOPE)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w" PARENT_SCOPE)
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-        list(FILTER opts EXCLUDE REGEX "^[/-]W")
-        list(APPEND opts "/W0")
+        string(REGEX REPLACE "(^| )[/-]W([0-4]|all)" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0" PARENT_SCOPE)
+
+        string(REGEX REPLACE "(^| )[/-]W([0-4]|all)" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W0" PARENT_SCOPE)
     endif ()
 
-    set_directory_properties(PROPERTIES COMPILE_OPTIONS "${opts}")
-
     if (WIN32)
-        add_compile_definitions("_CRT_SECURE_NO_WARNINGS")
         add_compile_definitions("_CRT_SECURE_NO_WARNINGS")
     endif ()
 endfunction ()
