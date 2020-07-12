@@ -1,6 +1,6 @@
 function (cpp_warnings_auto)
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-        add_compile_options(
+        set(flags
             "-Weverything"
 
             "-Wno-c++98-compat-pedantic"
@@ -13,9 +13,9 @@ function (cpp_warnings_auto)
             "-Wno-weak-vtables"
         )
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-        add_compile_options("-pedantic" "-Wall" "-Wextra")
+        set(flags "-pedantic" "-Wall" "-Wextra")
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-        add_compile_options(
+        set(flags
             "/Wall"
 
             "/wd4365"
@@ -35,9 +35,16 @@ function (cpp_warnings_auto)
             "/wd4355"
             "/wd4868"
             "/wd5204"
-        )
 
-        add_compile_options("/experimental:external" "/external:W0" "/external:env:INCLUDE")
+            "/experimental:external"
+            "/external:W0"
+            "/external:env:INCLUDE"
+        )
         set(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "/external:I" PARENT_SCOPE)
+        set(CMAKE_INCLUDE_SYSTEM_FLAG_C "/external:I" PARENT_SCOPE)
     endif ()
+
+    list(JOIN flags " " flags_str)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flags_str}" PARENT_SCOPE)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${flags_str}" PARENT_SCOPE)
 endfunction ()
