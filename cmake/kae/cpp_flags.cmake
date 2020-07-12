@@ -10,6 +10,7 @@ macro (cpp_flags_auto)
         set(CMAKE_CXX_FLAGS_RELEASE "-D NDEBUG -O3 -flto=thin")
 
         if (WIN32)
+            add_compile_definitions("_MT")
             set(CMAKE_CXX_FLAGS_DEBUG "-D _DEBUG")
             if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
                 link_libraries("libcmtd" "libcpmtd")
