@@ -43,16 +43,15 @@ macro (cpp_flags_auto)
         set(CMAKE_STATIC_LINKER_FLAGS_RELEASE "/LTCG")
     endif ()
 
-    if (CMAKE_C_COMPILER_ID)
-        if (NOT "${CMAKE_C_COMPILER_ID}" STREQUAL "${CMAKE_CXX_COMPILER_ID}")
-            message(FATAL_ERROR "C/CXX compilers mismatch (C='${CMAKE_C_COMPILER_ID}' CXX='${CMAKE_CXX_COMPILER_ID}')")
-        endif ()
-
-        set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS}")
-        set(CMAKE_C_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
-        set(CMAKE_C_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
+    if (CMAKE_C_COMPILER_ID AND NOT "${CMAKE_C_COMPILER_ID}" STREQUAL "${CMAKE_CXX_COMPILER_ID}")
+        message(FATAL_ERROR "C/CXX compilers mismatch (C='${CMAKE_C_COMPILER_ID}' CXX='${CMAKE_CXX_COMPILER_ID}')")
     endif ()
 
+    set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS}")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
+
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} $ENV{CFLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} $ENV{CXXFLAGS}")
 
     if (WIN32)
