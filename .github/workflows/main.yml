@@ -25,7 +25,7 @@ jobs:
           apt -y full-upgrade
           apt -y --no-install-recommends install  \
               git ca-certificates  \
-              cmake g++ nasm ninja-build python3  \
+              cmake g++ ninja-build python3  \
               clang-$LLVM_VERSION clang-format-$LLVM_VERSION clang-tidy-$LLVM_VERSION lld-$LLVM_VERSION llvm-$LLVM_VERSION
           ln -s "clang-$LLVM_VERSION" "/usr/bin/clang"
           ln -s "clang++-$LLVM_VERSION" "/usr/bin/clang++"
