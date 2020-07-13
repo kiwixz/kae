@@ -26,12 +26,11 @@ jobs:
           apt -y --no-install-recommends install  \
               git ca-certificates  \
               cmake g++ nasm ninja-build python3  \
-              clang-$LLVM_VERSION clang-format-$LLVM_VERSION clang-tidy-$LLVM_VERSION lld-$LLVM_VERSION
+              clang-$LLVM_VERSION clang-format-$LLVM_VERSION clang-tidy-$LLVM_VERSION lld-$LLVM_VERSION llvm-$LLVM_VERSION
           ln -s "clang-$LLVM_VERSION" "/usr/bin/clang"
           ln -s "clang++-$LLVM_VERSION" "/usr/bin/clang++"
           ln -s "clang-format-$LLVM_VERSION" "/usr/bin/clang-format"
           ln -s "clang-tidy-$LLVM_VERSION" "/usr/bin/clang-tidy"
-          ln -s "ld.lld-$LLVM_VERSION" "/usr/bin/ld.lld"
 
       - name: Dump packages versions
         run: |
