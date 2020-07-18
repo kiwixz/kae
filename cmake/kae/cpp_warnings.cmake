@@ -4,6 +4,7 @@ function (cpp_warnings_auto)
             "-Weverything"
 
             "-Wno-c++98-compat-pedantic"
+            "-Wno-covered-switch-default"
             "-Wno-ctad-maybe-unsupported"
             "-Wno-double-promotion"
             "-Wno-exit-time-destructors"
