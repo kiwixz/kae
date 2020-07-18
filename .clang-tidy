@@ -74,9 +74,11 @@ Checks: "*,
   -hicpp-no-array-decay,
   -hicpp-no-malloc,
   -llvm-namespace-comment,
+  -llvm-qualified-auto,
   -misc-unconventional-assign-operator,
   -modernize-avoid-c-arrays,
   -performance-unnecessary-value-param,
+  -readability-qualified-auto,
 "
 
 WarningsAsErrors: ""
