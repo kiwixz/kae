@@ -1,4 +1,4 @@
-# clang-tidy 9
+# clang-tidy 10
 
 Checks: "*,
   -abseil-*,
@@ -12,6 +12,7 @@ Checks: "*,
   -clang-diagnostic-unused-parameter,
   -clang-diagnostic-unused-private-field,
 
+  -cppcoreguidelines-init-variables,
   -cppcoreguidelines-avoid-magic-numbers,
   -cppcoreguidelines-macro-usage,
   -cppcoreguidelines-narrowing-conversions,
@@ -51,6 +52,7 @@ Checks: "*,
 
   -readability-braces-around-statements,
   -readability-convert-member-functions-to-static,
+  -readability-else-after-return,
   -readability-implicit-bool-conversion,
   -readability-magic-numbers,
   -readability-static-accessed-through-instance,
