@@ -90,11 +90,13 @@ jobs:
       fail-fast: false
       matrix:
         build_type: [Debug, Release]
-        cc: [clang, cl]
+        toolchain: [llvm, msvc]
         include:
-          - cc: clang
+          - toolchain: llvm
+            cc: clang
             cxx: clang++
-          - cc: cl
+          - toolchain: msvc
+            cc: cl
             cxx: cl
     runs-on: windows-latest
     defaults:
@@ -104,10 +106,9 @@ jobs:
       VCVARS: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"
     steps:
       - name: Install system dependencies
+        if: matrix.toolchain == 'llvm'
         run: |
-          if "${{ matrix.cc }}"=="clang" (
-            choco install llvm --version=%LLVM_VERSION%.0.0
-          )
+          choco install llvm --version=%LLVM_VERSION%.0.0
 
       - name: Dump tools versions
         run: |
@@ -143,13 +144,13 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v2
         with:
-          name: win-${{ matrix.cc }}-${{ matrix.build_type }}-failed
+          name: win-${{ matrix.toolchain }}-${{ matrix.build_type }}-failed
           path: build
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: win-${{ matrix.cc }}-${{ matrix.build_type }}
+          name: win-${{ matrix.toolchain }}-${{ matrix.build_type }}
           path: build/bin
 
       - name: Test
