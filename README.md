@@ -1,8 +1,8 @@
 # Kae
 
-This lib contains common utilities I use in most of my C++ projects.
+Here you'll find common utilities that I use in most of my C++ projects, as well as those that I just wanted to code 😊
 
-There is no guarantee for API backward compatibility nor versioning, so pick a commit and only update when feeling adventurous.
+I also use this repository to experiment with CI, and various C++-related tooling (cmake, clang-format, clang-tidy, etc).
 
 #
 
