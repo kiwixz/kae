@@ -13,8 +13,10 @@ jobs:
         include:
           - cc: clang
             cxx: clang++
+            cxx_packages: clang-$LLVM_VERSION libstdc++-10-dev
           - cc: gcc
             cxx: g++
+            cxx_packages: g++-10
     runs-on: ubuntu-latest
     container:
       image: debian:bullseye-slim
@@ -25,8 +27,9 @@ jobs:
           apt -y full-upgrade
           apt -y --no-install-recommends install  \
               git ca-certificates  \
-              cmake g++ ninja-build python3  \
-              clang-$LLVM_VERSION clang-format-$LLVM_VERSION clang-tidy-$LLVM_VERSION lld-$LLVM_VERSION llvm-$LLVM_VERSION
+              cmake ninja-build python3  \
+              clang-format-$LLVM_VERSION clang-tidy-$LLVM_VERSION lld-$LLVM_VERSION llvm-$LLVM_VERSION  \
+              ${{ matrix.cxx_packages }}
           ln -s "clang-$LLVM_VERSION" "/usr/bin/clang"
           ln -s "clang++-$LLVM_VERSION" "/usr/bin/clang++"
           ln -s "clang-format-$LLVM_VERSION" "/usr/bin/clang-format"
