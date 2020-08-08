@@ -6,10 +6,13 @@ import subprocess
 import sys
 
 
+CLANG_TIDY = os.getenv("CLANG_TIDY", "clang-tidy")
+
+
 def check_file(path):
     try:
         subprocess.check_output(
-            ["clang-tidy", "-quiet", "-warnings-as-errors=*", "-p", "build", path], stderr=subprocess.STDOUT, text=True,
+            [CLANG_TIDY, "-quiet", "-warnings-as-errors=*", "-p", "build", path], stderr=subprocess.STDOUT, text=True,
         )
         return path, None
     except subprocess.CalledProcessError as ex:

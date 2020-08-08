@@ -5,8 +5,11 @@ import os
 import subprocess
 
 
+CLANG_FORMAT = os.getenv("CLANG_FORMAT", "clang-format")
+
+
 def format_file(path):
-    subprocess.check_call(["clang-format", "-i", path])
+    subprocess.check_call([CLANG_FORMAT, "-i", path])
 
 
 def main():

@@ -7,10 +7,13 @@ import subprocess
 import sys
 
 
+CLANG_FORMAT = os.getenv("CLANG_FORMAT", "clang-format")
+
+
 def check_file(path):
     with open(path) as f:
         original = f.read()
-    formatted = subprocess.check_output(["clang-format", "-assume-filename", path], input=original, text=True)
+    formatted = subprocess.check_output([CLANG_FORMAT, "-assume-filename", path], input=original, text=True)
     diff = difflib.unified_diff(original.splitlines(), formatted.splitlines(), path, "formatted", lineterm="")
     return path, list(diff)
 

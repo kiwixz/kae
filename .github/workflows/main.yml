@@ -22,6 +22,8 @@ jobs:
       image: debian:bullseye-slim
     env:
       GCC_VERSION: 10
+      CLANG_FORMAT: clang-format-$LLVM_VERSION
+      CLANG_TIDY: clang-tidy-$LLVM_VERSION
     steps:
       - name: Install system dependencies
         run: |
@@ -33,8 +35,6 @@ jobs:
               cmake ninja-build python3  \
               clang-format-$LLVM_VERSION clang-tidy-$LLVM_VERSION  \
               ${{ matrix.cxx_packages }}
-          ln -s "clang-format-$LLVM_VERSION" "/usr/bin/clang-format"
-          ln -s "clang-tidy-$LLVM_VERSION" "/usr/bin/clang-tidy"
 
       - name: Dump packages versions
         run: |
