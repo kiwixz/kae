@@ -24,12 +24,10 @@ jobs:
       image: debian:bullseye-slim
     env:
       GCC_VERSION: 10
-      CLANG_FORMAT: clang-format-$LLVM_VERSION
-      CLANG_TIDY: clang-tidy-$LLVM_VERSION
     steps:
       - name: Install system dependencies
         run: |
-          echo "Dpkg::Use-Pty 0;" > /etc/apt/apt.conf.d/no_pty
+          echo "Dpkg::Use-Pty 0;" > "/etc/apt/apt.conf.d/no_pty"
           apt update
           apt -y full-upgrade
           apt -y --no-install-recommends install  \
@@ -53,11 +51,11 @@ jobs:
 
       - name: Configure
         env:
-          CC: ${{ matrix.cc }}
-          CXX: ${{ matrix.cxx }}
           CXXFLAGS: -fdiagnostics-color=always
           LDFLAGS: -fdiagnostics-color=always
         run: |
+          export CC="${{ matrix.cc }}"
+          export CXX="${{ matrix.cxx }}"
           cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -S "." -B "build"
 
       - name: Build
@@ -68,13 +66,13 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v2
         with:
-          name: deb-${{ matrix.cc }}-${{ matrix.build_type }}-failed
+          name: deb-${{ matrix.toolchain }}-${{ matrix.build_type }}-failed
           path: build
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: deb-${{ matrix.cc }}-${{ matrix.build_type }}
+          name: deb-${{ matrix.toolchain }}-${{ matrix.build_type }}
           path: build/bin
 
       - name: Test
@@ -82,6 +80,8 @@ jobs:
           ASAN_OPTIONS: check_initialization_order=1:detect_stack_use_after_return=1
           UBSAN_OPTIONS: print_stacktrace=1
         run: |
+          export CLANG_FORMAT="clang-format-$LLVM_VERSION"
+          export CLANG_TIDY="clang-tidy-$LLVM_VERSION"
           cd "build"
           ctest --verbose
 
