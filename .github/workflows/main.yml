@@ -9,12 +9,14 @@ jobs:
       fail-fast: false
       matrix:
         build_type: [Debug, Release]
-        cc: [clang, gcc]
+        toolchain: [llvm, gcc]
         include:
-          - cc: clang-$LLVM_VERSION
+          - toolchain: llvm
+            cc: clang-$LLVM_VERSION
             cxx: clang++-$LLVM_VERSION
             cxx_packages: clang-$LLVM_VERSION libstdc++-$GCC_VERSION-dev lld-$LLVM_VERSION llvm-$LLVM_VERSION
-          - cc: gcc-$GCC_VERSION
+          - toolchain: gcc
+            cc: gcc-$GCC_VERSION
             cxx: g++-$GCC_VERSION
             cxx_packages: g++-$GCC_VERSION
     runs-on: ubuntu-latest
