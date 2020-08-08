@@ -8,7 +8,7 @@
 
 namespace kae {
 
-Exception::Exception(std::string&& from, std::string_view what) :
+Exception::Exception(std::string from, std::string_view what) :
     std::runtime_error{what.data()},
     from_{std::make_shared<const std::string>(std::move(from))}
 {}
@@ -33,7 +33,7 @@ void terminate() noexcept
         }
     }
 
-    kae::Logger logger{"terminate"};
+    kae::Logger logger{"Terminate"};
     try {
         std::exception_ptr ex = std::current_exception();
         if (ex)

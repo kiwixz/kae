@@ -15,7 +15,7 @@
 #    define ASSERT(condition)                                                                                                            \
         do {                                                                                                                             \
             if (!(condition)) {                                                                                                          \
-                ::kae::Logger{"assert"}(::kae::LogLevel::fatal, "condition is false: " STRINGIFY(condition) "\nfrom: " SOURCE_LOCATION); \
+                ::kae::Logger{"Assert"}(::kae::LogLevel::fatal, "condition is false: " STRINGIFY(condition) "\nfrom: " SOURCE_LOCATION); \
                 ::std::terminate();                                                                                                      \
             }                                                                                                                            \
         } while (false)
