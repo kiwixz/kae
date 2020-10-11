@@ -1,8 +1,9 @@
-# clang-tidy 10
+# clang-tidy 11
 
 Checks: "*,
   -abseil-*,
   -fuchsia-*,
+  -llvmlibc-*,
 
   -bugprone-integer-division,
   -bugprone-macro-parentheses,
