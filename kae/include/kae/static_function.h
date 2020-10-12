@@ -13,16 +13,10 @@ struct StaticFunction {
 
     template <typename... Args>
     constexpr std::invoke_result_t<Function, Args...> operator()(Args&&... args)
-            const noexcept(std::is_nothrow_invocable_v<Function, Args...>);
+            const noexcept(std::is_nothrow_invocable_v<Function, Args...>)
+    {
+        return function(std::forward<Args>(args)...);
+    }
 };
-
-template <auto Tfunction>
-template <typename... Args>
-constexpr std::invoke_result_t<typename StaticFunction<Tfunction>::Function, Args...>
-StaticFunction<Tfunction>::operator()(Args&&... args)
-        const noexcept(std::is_nothrow_invocable_v<Function, Args...>)
-{
-    return function(std::forward<Args>(args)...);
-}
 
 }  // namespace kae
