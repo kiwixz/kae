@@ -43,6 +43,7 @@ Checks: "*,
   -hicpp-uppercase-literal-suffix,
   -hicpp-vararg,
 
+  -llvm-else-after-return,
   -llvm-header-guard,
   -llvm-include-order,
 

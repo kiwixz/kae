@@ -39,7 +39,11 @@ def main():
     os.chdir(sys.argv[1])
 
     git_files = subprocess.check_output(["git", "ls-files"], text=True).splitlines()
-    todo_files = [f for f in git_files if (f.endswith(".cpp") or f.endswith(".h")) and not f.startswith("cmake/")]
+    todo_files = [
+        f
+        for f in git_files
+        if (f.endswith(".cpp") or f.endswith(".h")) and not f.startswith("cmake/") and os.path.exists(f)
+    ]
     total = len(todo_files)
     done = 0
     failed = 0

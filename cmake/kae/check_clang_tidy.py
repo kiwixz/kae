@@ -12,7 +12,9 @@ CLANG_TIDY = os.getenv("CLANG_TIDY", "clang-tidy")
 def check_file(path):
     try:
         subprocess.check_output(
-            [CLANG_TIDY, "-quiet", "-warnings-as-errors=*", "-p", "build", path], stderr=subprocess.STDOUT, text=True,
+            [CLANG_TIDY, "-quiet", "-warnings-as-errors=*", "-p", "build", path],
+            stderr=subprocess.STDOUT,
+            text=True,
         )
         return path, None
     except subprocess.CalledProcessError as ex:
@@ -31,7 +33,7 @@ def main():
         return 1
 
     git_files = subprocess.check_output(["git", "ls-files"], text=True).splitlines()
-    todo_files = [f for f in git_files if f.endswith(".cpp") and not f.startswith("cmake/")]
+    todo_files = [f for f in git_files if f.endswith(".cpp") and not f.startswith("cmake/") and os.path.exists(f)]
 
     total = len(todo_files)
     done = 0
