@@ -63,10 +63,10 @@ struct CircularIterator {
         return r;
     }
 
-#define DEF_OP(op)                                           \
-    bool operator op(const CircularIterator<Element>& other) \
-    {                                                        \
-        return element_ op other.element_;                   \
+#define DEF_OP(op)                                                 \
+    bool operator op(const CircularIterator<Element>& other) const \
+    {                                                              \
+        return element_ op other.element_;                         \
     }
 
     DEF_OP(==)
