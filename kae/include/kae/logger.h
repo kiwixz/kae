@@ -1,11 +1,11 @@
 #pragma once
 
+#include <span>
 #include <string_view>
 
 #include <fmt/format.h>
 
 #include "kae/logging.h"
-#include "kae/span.h"
 
 namespace kae {
 
@@ -17,16 +17,16 @@ struct Logger {
     template <typename... Args>
     bool operator()(LogLevel level, std::string_view format, Args&&... args) const;
 
-    bool hexdump(LogLevel level, Span<const std::byte> data, std::string_view title) const;
+    bool hexdump(LogLevel level, std::span<const std::byte> data, std::string_view title) const;
 
     template <typename... Args>
-    bool hexdump(LogLevel level, Span<const std::byte> data, std::string_view format, Args&&... args) const;
+    bool hexdump(LogLevel level, std::span<const std::byte> data, std::string_view format, Args&&... args) const;
 
 private:
     std::string tag_;
 
     void sink(LogLevel level, std::string_view message) const;
-    void sink_hexdump(LogLevel level, Span<const std::byte> data, std::string_view title) const;
+    void sink_hexdump(LogLevel level, std::span<const std::byte> data, std::string_view title) const;
 };
 
 
@@ -41,12 +41,12 @@ bool Logger::operator()(LogLevel level, std::string_view format, Args&&... args)
 }
 
 template <typename... Args>
-bool Logger::hexdump(LogLevel level, Span<const std::byte> data, std::string_view format, Args&&... args) const
+bool Logger::hexdump(LogLevel level, std::span<const std::byte> data, std::string_view format, Args&&... args) const
 {
     if (level < tag_log_level(tag_))
         return false;
 
-    sink_hexdump(level, data.as_bytes(), fmt::format(format, std::forward<Args>(args)...));
+    sink_hexdump(level, std::as_bytes(data), fmt::format(format, std::forward<Args>(args)...));
     return true;
 }
 

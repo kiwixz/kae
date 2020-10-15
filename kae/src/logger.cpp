@@ -54,12 +54,12 @@ bool Logger::operator()(LogLevel level, std::string_view message) const
     return true;
 }
 
-bool Logger::hexdump(LogLevel level, Span<const std::byte> data, std::string_view title) const
+bool Logger::hexdump(LogLevel level, std::span<const std::byte> data, std::string_view title) const
 {
     if (level < tag_log_level(tag_))
         return false;
 
-    sink_hexdump(level, data.as_bytes(), title);
+    sink_hexdump(level, std::as_bytes(data), title);
     return true;
 }
 
@@ -72,14 +72,14 @@ void Logger::sink(LogLevel level, std::string_view message) const
                              time.count(), level_info.name, thread_id(), tag_, message);
 }
 
-void Logger::sink_hexdump(LogLevel level, Span<const std::byte> data, std::string_view title) const
+void Logger::sink_hexdump(LogLevel level, std::span<const std::byte> data, std::string_view title) const
 {
     constexpr size_t kBytesPerLine = 16;
 
     std::string message = fmt::format("hexdump {} bytes: {}\n", data.size(), title);
 
     for (size_t offset = 0; offset < data.size(); offset += kBytesPerLine) {
-        Span<const std::byte> line = data.subspan(offset, std::min(kBytesPerLine, data.size() - offset));
+        std::span<const std::byte> line = data.subspan(offset, std::min(kBytesPerLine, data.size() - offset));
         message += fmt::format("  {:08x}  ", offset);  // offset
 
         for (std::byte c : line)  // hex bytes
