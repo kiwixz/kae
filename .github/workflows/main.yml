@@ -1,7 +1,7 @@
 on: [pull_request, push]
 
 env:
-  LLVM_VERSION: 10
+  LLVM_VERSION: 11
 
 jobs:
   build_debian:

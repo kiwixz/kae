@@ -7,7 +7,7 @@ macro (cpp_flags_auto)
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
         set(CMAKE_CXX_FLAGS "-march=haswell")
         set(CMAKE_CXX_FLAGS_DEBUG "-D DEBUG -Og -g -fno-omit-frame-pointer -fsanitize=address,undefined")
-        set(CMAKE_CXX_FLAGS_RELEASE "-D NDEBUG -O3 -flto=thin")
+        set(CMAKE_CXX_FLAGS_RELEASE "-D NDEBUG -O3 -flto=thin -fwhole-program-vtables")
 
         if (WIN32)
             string(REPLACE "-fsanitize=address,undefined" "-D _DEBUG" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
