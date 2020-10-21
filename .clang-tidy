@@ -5,6 +5,8 @@ Checks: "*,
   -fuchsia-*,
   -llvmlibc-*,
 
+  -altera-struct-pack-align,
+
   -bugprone-integer-division,
   -bugprone-macro-parentheses,
   -bugprone-narrowing-conversions,
