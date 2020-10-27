@@ -13,6 +13,7 @@ macro (cpp_flags_auto)
             string(REPLACE "-fsanitize=address,undefined" "-D _DEBUG" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
             set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -gdwarf")
             add_compile_definitions("_MT")
+            add_link_options("-Wl,/ignore:longsections")  # dwarf needs long section headers
             if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
                 link_libraries("libcmtd" "libcpmtd")
             else ()
