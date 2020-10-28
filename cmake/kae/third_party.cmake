@@ -30,7 +30,7 @@ function (third_party name)
 
     if (NOT ARG_DONT_RUN_CMAKE)
         message(STATUS "adding ${name}")
-        _suppress_warnings_cpp()
+        suppress_warnings_cpp()
         list(APPEND CMAKE_MESSAGE_CONTEXT "${name}")
         add_subdirectory("${${name}_SOURCE_DIR}" "${${name}_BINARY_DIR}" EXCLUDE_FROM_ALL)
         list(POP_BACK CMAKE_MESSAGE_CONTEXT)
@@ -43,6 +43,24 @@ function (system_include_dirs target)
     set_target_properties("${target}" PROPERTIES
         INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "${incs}"
     )
+endfunction ()
+
+
+function (suppress_warnings_cpp)
+    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w" PARENT_SCOPE)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w" PARENT_SCOPE)
+    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+        string(REGEX REPLACE "(^| )[/-]W([0-4]|all)" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0" PARENT_SCOPE)
+
+        string(REGEX REPLACE "(^| )[/-]W([0-4]|all)" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W0" PARENT_SCOPE)
+    endif ()
+
+    if (WIN32)
+        add_compile_definitions("_CRT_SECURE_NO_WARNINGS")
+    endif ()
 endfunction ()
 
 
@@ -72,22 +90,4 @@ function (_apply_patches dir)
             message(STATUS "patch '${patch}' already applied")
         endif ()
     endforeach ()
-endfunction ()
-
-
-function (_suppress_warnings_cpp)
-    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w" PARENT_SCOPE)
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w" PARENT_SCOPE)
-    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-        string(REGEX REPLACE "(^| )[/-]W([0-4]|all)" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0" PARENT_SCOPE)
-
-        string(REGEX REPLACE "(^| )[/-]W([0-4]|all)" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W0" PARENT_SCOPE)
-    endif ()
-
-    if (WIN32)
-        add_compile_definitions("_CRT_SECURE_NO_WARNINGS")
-    endif ()
 endfunction ()
