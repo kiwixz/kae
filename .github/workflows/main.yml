@@ -1,6 +1,7 @@
 on: [pull_request, push]
 
 env:
+  GCC_VERSION: 10
   LLVM_VERSION: 11
 
 jobs:
@@ -21,19 +22,15 @@ jobs:
             cxx_packages: g++-$GCC_VERSION
     runs-on: ubuntu-latest
     container:
-      image: debian:bullseye-slim
-    env:
-      GCC_VERSION: 10
+      image: debian:sid-slim
     steps:
       - name: Install system dependencies
         run: |
           echo "Dpkg::Use-Pty 0;" > "/etc/apt/apt.conf.d/no_pty"
           apt update
-          apt -y full-upgrade
-          apt -y --no-install-recommends install  \
+          apt -y --no-install-recommends full-upgrade  \
               git ca-certificates  \
               cmake ninja-build python3  \
-              clang-format-$LLVM_VERSION clang-tidy-$LLVM_VERSION  \
               ${{ matrix.cxx_packages }}
 
       - name: Dump packages versions
@@ -56,7 +53,7 @@ jobs:
         run: |
           export CC="${{ matrix.cc }}"
           export CXX="${{ matrix.cxx }}"
-          cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -S "." -B "build"
+          cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -B "build"
 
       - name: Build
         run: |
@@ -80,10 +77,8 @@ jobs:
           ASAN_OPTIONS: check_initialization_order=1:detect_stack_use_after_return=1
           UBSAN_OPTIONS: print_stacktrace=1
         run: |
-          export CLANG_FORMAT="clang-format-$LLVM_VERSION"
-          export CLANG_TIDY="clang-tidy-$LLVM_VERSION"
           cd "build"
-          ctest --verbose
+          ctest -V -E "clang_.*"
 
   build_windows:
     strategy:
@@ -133,7 +128,7 @@ jobs:
         run: |
           call "%VCVARS%"
           set "PATH=C:\\Program Files\\LLVM\\bin;%PATH%"
-          cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -S "." -B "build"
+          cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -B "build"
 
       - name: Build
         run: |
@@ -155,10 +150,133 @@ jobs:
 
       - name: Test
         run: |
+          call "%VCVARS%"
           cd "build"
-          if "${{ matrix.cc }}"=="clang" (
-            set "PATH=C:\\Program Files\\LLVM\\bin;%PATH%"
-            ctest --verbose
-          ) else (
-            ctest --verbose -E "clang_.*"
-          )
+          ctest -V -E "clang_.*"
+
+  clang_format:
+    runs-on: ubuntu-latest
+    container:
+      image: debian:sid-slim
+    steps:
+      - name: Install system dependencies
+        run: |
+          echo "Dpkg::Use-Pty 0;" > "/etc/apt/apt.conf.d/no_pty"
+          apt update
+          apt -y --no-install-recommends full-upgrade  \
+              git ca-certificates  \
+              cmake ninja-build python3  \
+              clang-$LLVM_VERSION clang-format-$LLVM_VERSION
+
+      - name: Dump packages versions
+        run: |
+          apt list --installed
+
+      - name: Checkout
+        run: |
+          git clone "https://github.com/${{ github.repository }}" "./"
+          git checkout "${{ github.sha }}"
+
+      - name: Configure
+        run: |
+          export CC="clang-$LLVM_VERSION"
+          export CXX="clang++-$LLVM_VERSION"
+          cmake -G Ninja -B "build"
+
+      - name: Register problem matchers
+        run: |
+          echo "::add-matcher::.github/problem_matchers.json"
+
+      - name: clang-format
+        run: |
+          export CLANG_FORMAT="clang-format-$LLVM_VERSION"
+          cd build
+          ctest -V -R "clang_format"
+
+  clang_tidy_linux:
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [Debug, Release]
+    runs-on: ubuntu-latest
+    container:
+      image: debian:sid-slim
+    steps:
+      - name: Install system dependencies
+        run: |
+          echo "Dpkg::Use-Pty 0;" > "/etc/apt/apt.conf.d/no_pty"
+          apt update
+          apt -y --no-install-recommends full-upgrade  \
+              git ca-certificates  \
+              cmake ninja-build python3  \
+              clang-$LLVM_VERSION libstdc++-$GCC_VERSION-dev clang-tidy-$LLVM_VERSION
+
+      - name: Dump packages versions
+        run: |
+          apt list --installed
+
+      - name: Checkout
+        run: |
+          git clone "https://github.com/${{ github.repository }}" "./"
+          git checkout "${{ github.sha }}"
+
+      - name: Configure
+        run: |
+          export CC="clang-$LLVM_VERSION"
+          export CXX="clang++-$LLVM_VERSION"
+          cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -B "build"
+
+      - name: Register problem matchers
+        run: |
+          echo "::add-matcher::.github/problem_matchers.json"
+
+      - name: clang-tidy
+        run: |
+          export CLANG_TIDY="clang-tidy-$LLVM_VERSION"
+          cd build
+          ctest -V -R "clang_tidy"
+
+  clang_tidy_windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [Debug, Release]
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: cmd
+    env:
+      VCVARS: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"
+    steps:
+      - name: Install system dependencies
+        run: |
+          choco install llvm --version=%LLVM_VERSION%.0.0
+
+      - name: Dump tools versions
+        run: |
+          call "%VCVARS%"
+          git --version
+          cmake --version
+          ninja --version
+
+      - name: Checkout
+        run: |
+          git clone "https://github.com/${{ github.repository }}" "."
+          git checkout "${{ github.sha }}"
+
+      - name: Configure
+        run: |
+          call "%VCVARS%"
+          set "PATH=C:\\Program Files\\LLVM\\bin;%PATH%"
+          cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -B "build"
+
+      - name: Register problem matchers
+        run: |
+          echo ::add-matcher::.github/problem_matchers.json
+
+      - name: clang_tidy
+        run: |
+          call "%VCVARS%"
+          set "PATH=C:\\Program Files\\LLVM\\bin;%PATH%"
+          cd build
+          ctest -V -R "clang_tidy"
