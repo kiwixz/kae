@@ -18,6 +18,7 @@ endif ()
 option(KAE_TESTS "Build tests" ${IS_ROOT_LIST})
 option(KAE_AUTO_COMPILERS "Automatically override compilers" ${IS_ROOT_LIST})
 option(KAE_AUTO_FLAGS "Automatically override flags" ${IS_ROOT_LIST})
+set(KAE_ARCH "native" CACHE STRING "Machine architecture")
 
 if (IS_ROOT_LIST)
     set_default(CMAKE_BUILD_TYPE "Debug" STRING)
@@ -43,7 +44,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if (KAE_AUTO_FLAGS)
-    cpp_flags_auto()
+    cpp_flags_auto("${KAE_ARCH}")
     cpp_warnings_auto()
 endif ()
 

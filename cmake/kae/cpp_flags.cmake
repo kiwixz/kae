@@ -1,11 +1,11 @@
-macro (cpp_flags_auto)
+macro (cpp_flags_auto arch)
     if (NOT ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug"
         OR "${CMAKE_BUILD_TYPE}" STREQUAL "Release"))
         message(FATAL_ERROR "unspecialized build type '${CMAKE_BUILD_TYPE}'")
     endif ()
 
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-        set(CMAKE_CXX_FLAGS "-march=haswell")
+        set(CMAKE_CXX_FLAGS "-march=${arch}")
         set(CMAKE_CXX_FLAGS_DEBUG "-D DEBUG -Og -g3 -glldb -fno-omit-frame-pointer -fsanitize=address,undefined")
         set(CMAKE_CXX_FLAGS_RELEASE "-D NDEBUG -O3 -flto=thin -fwhole-program-vtables")
 
@@ -23,7 +23,7 @@ macro (cpp_flags_auto)
             add_link_options("-static-libgcc" "-static-libstdc++")
         endif ()
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-        set(CMAKE_CXX_FLAGS "-march=haswell")
+        set(CMAKE_CXX_FLAGS "-march=${arch}")
         set(CMAKE_CXX_FLAGS_DEBUG "-D DEBUG -Og -g3 -fno-omit-frame-pointer -fsanitize=address,undefined")
         set(CMAKE_CXX_FLAGS_RELEASE "-D NDEBUG -O3 -flto")
 
@@ -31,7 +31,11 @@ macro (cpp_flags_auto)
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
         set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-        set(CMAKE_CXX_FLAGS "/nologo /diagnostics:caret /bigobj /MP /EHsc /permissive- /arch:AVX2")
+        if ("${arch}" STREQUAL "native")
+            set(arch "AVX2")
+        endif ()
+
+        set(CMAKE_CXX_FLAGS "/nologo /diagnostics:caret /bigobj /MP /EHsc /permissive- /arch:${arch}")
         set(CMAKE_CXX_FLAGS_DEBUG "/DDEBUG /MTd /GF /Oi /JMC /RTC1 /ZI")
         set(CMAKE_CXX_FLAGS_RELEASE "/DNDEBUG /MT /O2 /GL /Gw")
 
