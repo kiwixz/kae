@@ -31,7 +31,7 @@ macro (cpp_flags_auto arch)
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
         set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-        if ("${arch}" STREQUAL "native")
+        if ("${arch}" STREQUAL "native" OR "${arch}" STREQUAL "haswell")
             set(arch "AVX2")
         endif ()
 

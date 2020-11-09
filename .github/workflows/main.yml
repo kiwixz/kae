@@ -128,7 +128,7 @@ jobs:
         run: |
           call "%VCVARS%"
           set "PATH=C:\\Program Files\\LLVM\\bin;%PATH%"
-          cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -D "KAE_ARCH=AVX2" -B "build"
+          cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -D "KAE_ARCH=haswell" -B "build"
 
       - name: Build
         run: |
@@ -268,7 +268,7 @@ jobs:
         run: |
           call "%VCVARS%"
           set "PATH=C:\\Program Files\\LLVM\\bin;%PATH%"
-          cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -D "KAE_ARCH=AVX2" -B "build"
+          cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -D "KAE_ARCH=haswell" -B "build"
 
       - name: Register problem matchers
         run: |
