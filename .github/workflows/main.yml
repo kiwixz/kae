@@ -53,7 +53,7 @@ jobs:
         run: |
           export CC="${{ matrix.cc }}"
           export CXX="${{ matrix.cxx }}"
-          cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -B "build"
+          cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -D "KAE_ARCH=haswell" -B "build"
 
       - name: Build
         run: |
@@ -128,7 +128,7 @@ jobs:
         run: |
           call "%VCVARS%"
           set "PATH=C:\\Program Files\\LLVM\\bin;%PATH%"
-          cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -B "build"
+          cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -D "KAE_ARCH=AVX2" -B "build"
 
       - name: Build
         run: |
@@ -224,7 +224,7 @@ jobs:
         run: |
           export CC="clang-$LLVM_VERSION"
           export CXX="clang++-$LLVM_VERSION"
-          cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -B "build"
+          cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -D "KAE_ARCH=haswell" -B "build"
 
       - name: Register problem matchers
         run: |
@@ -268,7 +268,7 @@ jobs:
         run: |
           call "%VCVARS%"
           set "PATH=C:\\Program Files\\LLVM\\bin;%PATH%"
-          cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -B "build"
+          cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -D "KAE_ARCH=AVX2" -B "build"
 
       - name: Register problem matchers
         run: |
