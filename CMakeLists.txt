@@ -42,6 +42,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_OPTIMIZE_DEPENDENCIES ON)
 
 if (KAE_AUTO_FLAGS)
     cpp_flags_auto("${KAE_ARCH}")
@@ -54,6 +55,17 @@ if (KAE_TESTS)
         add_clang_tests("${PROJECT_SOURCE_DIR}")
     endif ()
 endif ()
+
+file(GLOB_RECURSE data RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/data" CONFIGURE_DEPENDS "data/*")
+foreach (file IN LISTS data)
+    add_custom_command(OUTPUT "${CMAKE_BINARY_DIR}/data/${file}"
+        COMMAND cmake -E copy "${CMAKE_CURRENT_SOURCE_DIR}/data/${file}" "${CMAKE_BINARY_DIR}/data/"
+        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/data/${file}"
+        COMMENT "Copying data/${file}..."
+        VERBATIM
+    )
+    add_custom_target("data_${file}" ALL DEPENDS "${CMAKE_BINARY_DIR}/data/${file}")
+endforeach ()
 
 
 add_subdirectory("third_party/doctest")
