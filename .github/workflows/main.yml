@@ -22,13 +22,13 @@ jobs:
             cxx_packages: g++-$GCC_VERSION
     runs-on: ubuntu-latest
     container:
-      image: debian:sid-slim
+      image: debian:bullseye-slim
     steps:
       - name: Install system dependencies
         run: |
           echo "Dpkg::Use-Pty 0;" > "/etc/apt/apt.conf.d/no_pty"
           apt update
-          apt -y --no-install-recommends full-upgrade  \
+          apt -y --no-install-recommends install  \
               git ca-certificates  \
               cmake ninja-build python3  \
               ${{ matrix.cxx_packages }}
@@ -157,13 +157,13 @@ jobs:
   clang_format:
     runs-on: ubuntu-latest
     container:
-      image: debian:sid-slim
+      image: debian:bullseye-slim
     steps:
       - name: Install system dependencies
         run: |
           echo "Dpkg::Use-Pty 0;" > "/etc/apt/apt.conf.d/no_pty"
           apt update
-          apt -y --no-install-recommends full-upgrade  \
+          apt -y --no-install-recommends install  \
               git ca-certificates  \
               cmake ninja-build python3  \
               clang-$LLVM_VERSION clang-format-$LLVM_VERSION
@@ -200,13 +200,13 @@ jobs:
         build_type: [Debug, Release]
     runs-on: ubuntu-latest
     container:
-      image: debian:sid-slim
+      image: debian:bullseye-slim
     steps:
       - name: Install system dependencies
         run: |
           echo "Dpkg::Use-Pty 0;" > "/etc/apt/apt.conf.d/no_pty"
           apt update
-          apt -y --no-install-recommends full-upgrade  \
+          apt -y --no-install-recommends install  \
               git ca-certificates  \
               cmake ninja-build python3  \
               clang-$LLVM_VERSION libstdc++-$GCC_VERSION-dev clang-tidy-$LLVM_VERSION
