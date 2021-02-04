@@ -10,8 +10,20 @@ include("kae/set_default")
 
 if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(IS_ROOT_LIST ON)
+
+    set_default(CMAKE_BUILD_TYPE "Debug" STRING)
+    set_default(CMAKE_MESSAGE_CONTEXT_SHOW ON BOOL)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 else ()
     set(IS_ROOT_LIST OFF)
+endif ()
+
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+    set(IS_DEBUG ON)
+else ()
+    set(IS_DEBUG OFF)
 endif ()
 
 
@@ -19,14 +31,7 @@ option(KAE_TESTS "Build tests" ${IS_ROOT_LIST})
 option(KAE_AUTO_COMPILERS "Automatically override compilers" ${IS_ROOT_LIST})
 option(KAE_AUTO_FLAGS "Automatically override flags" ${IS_ROOT_LIST})
 set(KAE_ARCH "native" CACHE STRING "Machine architecture")
-
-if (IS_ROOT_LIST)
-    set_default(CMAKE_BUILD_TYPE "Debug" STRING)
-    set_default(CMAKE_MESSAGE_CONTEXT_SHOW ON BOOL)
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
-endif ()
+option(BUILD_SHARED_LIBS "Link shared libs instead of static libs" ${IS_DEBUG})
 
 
 if (KAE_AUTO_COMPILERS)
@@ -43,6 +48,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_OPTIMIZE_DEPENDENCIES ON)
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 if (KAE_AUTO_FLAGS)
     cpp_flags_auto("${KAE_ARCH}")

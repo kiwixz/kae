@@ -4,7 +4,7 @@ include("kae/cpp_test")
 set(target "kae")
 
 file(GLOB_RECURSE src CONFIGURE_DEPENDS "src/*.cpp")
-add_library("${target}" STATIC ${src})
+add_library("${target}" ${src})
 add_library("${PROJECT_NAME}::${target}" ALIAS "${target}")
 target_include_directories("${target}" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
