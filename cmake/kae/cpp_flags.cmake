@@ -83,7 +83,7 @@ macro (cpp_flags_auto arch)
     if (WIN32)
         link_libraries("onecore.lib")
     else ()
-        link_libraries("pthread" "stdc++fs")
+        link_libraries("dl" "pthread" "stdc++fs")
     endif ()
 
     _set_defaults_flags_cpp_linker()
