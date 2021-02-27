@@ -31,6 +31,7 @@ option(KAE_TESTS "Build tests" ${IS_ROOT_LIST})
 option(KAE_AUTO_COMPILERS "Automatically override compilers" ${IS_ROOT_LIST})
 option(KAE_AUTO_FLAGS "Automatically override flags" ${IS_ROOT_LIST})
 set(KAE_ARCH "native" CACHE STRING "Machine architecture")
+set(KAE_SANITIZERS "address,undefined" CACHE STRING "Sanitizers to use (only in Debug)")
 option(BUILD_SHARED_LIBS "Link shared libs instead of static libs" ${IS_DEBUG})
 
 
@@ -51,7 +52,7 @@ set(CMAKE_OPTIMIZE_DEPENDENCIES ON)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 if (KAE_AUTO_FLAGS)
-    cpp_flags_auto("${KAE_ARCH}")
+    cpp_flags_auto("${KAE_ARCH}" "${KAE_SANITIZERS}")
     cpp_warnings_auto()
 endif ()
 

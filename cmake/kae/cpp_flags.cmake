@@ -1,4 +1,4 @@
-macro (cpp_flags_auto arch)
+macro (cpp_flags_auto arch sanitizers)
     if (NOT ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug"
         OR "${CMAKE_BUILD_TYPE}" STREQUAL "Release"))
         message(FATAL_ERROR "unspecialized build type '${CMAKE_BUILD_TYPE}'")
@@ -6,11 +6,11 @@ macro (cpp_flags_auto arch)
 
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
         set(CMAKE_CXX_FLAGS "-march=${arch}")
-        set(CMAKE_CXX_FLAGS_DEBUG "-D DEBUG -Og -g3 -glldb -fno-omit-frame-pointer -fsanitize=address,undefined")
+        set(CMAKE_CXX_FLAGS_DEBUG "-D DEBUG -Og -g3 -glldb -fno-omit-frame-pointer -fsanitize=${sanitizers}")
         set(CMAKE_CXX_FLAGS_RELEASE "-D NDEBUG -O3 -flto=thin -fwhole-program-vtables")
 
         if (WIN32)
-            string(REPLACE "-fsanitize=address,undefined" "-D _DEBUG" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+            string(REPLACE "-fsanitize=${sanitizers}" "-D _DEBUG" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
             set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -gdwarf")
             add_link_options("-Wl,/ignore:longsections")  # dwarf needs long section headers
 
@@ -36,7 +36,7 @@ macro (cpp_flags_auto arch)
         endif ()
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
         set(CMAKE_CXX_FLAGS "-march=${arch}")
-        set(CMAKE_CXX_FLAGS_DEBUG "-D DEBUG -Og -g3 -fno-omit-frame-pointer -fsanitize=address,undefined")
+        set(CMAKE_CXX_FLAGS_DEBUG "-D DEBUG -Og -g3 -fno-omit-frame-pointer -fsanitize=${sanitizers}")
         set(CMAKE_CXX_FLAGS_RELEASE "-D NDEBUG -O3 -flto")
 
         if (NOT BUILD_SHARED_LIBS)
