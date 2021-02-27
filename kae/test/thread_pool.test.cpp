@@ -14,7 +14,7 @@ TEST_SUITE("thread_pool")
         ThreadPool pool{8};
 
         {
-            bool pass = false;
+            std::atomic<bool> pass = false;
             pool.submit([&] {
                     pass = true;
                 })
@@ -23,11 +23,11 @@ TEST_SUITE("thread_pool")
         }
 
         {
-            bool pass = false;
-            pool.submit([](bool* b) {
-                    *b = true;
+            std::atomic<bool> pass = false;
+            pool.submit([](std::atomic<bool>& b) {
+                    b = true;
                 },
-                        &pass)
+                        std::ref(pass))
                     .get();
             CHECK(pass);
         }
