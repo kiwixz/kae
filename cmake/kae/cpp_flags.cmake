@@ -150,11 +150,12 @@ function (_set_defaults_flags_cpp_linker)
 
     if (NOT WIN32)
         set(ld_flags "${ld_flags} -Wl,--as-needed")
-        if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
-            set(ld_flags "${ld_flags} -Wl,--no-undefined")  # sanitizers rely on undefined functions
+        if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")  # asan rely on this
+            set(ld_flags "${ld_flags} -Wl,--no-undefined")
         endif ()
     endif ()
 
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${ld_flags}" PARENT_SCOPE)
+    set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -Wl,-s" PARENT_SCOPE)
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${ld_flags}" PARENT_SCOPE)
 endfunction ()
