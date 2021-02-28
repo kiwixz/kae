@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        name: [debug_asan, debug_tsan, release]
+        build_type: [Debug, Release]
         toolchain: [llvm, gcc]
         include:
           - toolchain: llvm
@@ -20,14 +20,6 @@ jobs:
             cc: gcc-$GCC_VERSION
             cxx: g++-$GCC_VERSION
             cxx_packages: g++-$GCC_VERSION
-          - name: debug_asan
-            build_type: Debug
-            sanitizers: address,undefined
-          - name: debug_tsan
-            build_type: Debug
-            sanitizers: thread,undefined
-          - name: release
-            build_type: Release
     runs-on: ubuntu-latest
     container:
       image: debian:bullseye-slim
@@ -61,10 +53,7 @@ jobs:
         run: |
           export CC="${{ matrix.cc }}"
           export CXX="${{ matrix.cxx }}"
-          cmake -G Ninja -B "build"  \
-              -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}"  \
-              -D "KAE_ARCH=haswell"  \
-              -D "KAE_SANITIZERS=${{ matrix.sanitizers }}"
+          cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -D "KAE_ARCH=haswell" -B "build"
 
       - name: Build
         run: |
