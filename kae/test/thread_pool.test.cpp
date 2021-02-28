@@ -17,7 +17,7 @@ TEST_SUITE("thread_pool")
         CHECK(pool.submit([](const std::string& a) { return a; }, "world").get() == "world");
 
         pool.submit([ptr = std::make_unique<int>()] {});
-        CHECK(*pool.submit([ptr = std::make_unique<int>()]() mutable -> std::unique_ptr<int> {
+        CHECK(*pool.submit([ptr = std::make_unique<int>()]() mutable {
                        *ptr = 72;
                        return std::move(ptr);
                    }).get()
