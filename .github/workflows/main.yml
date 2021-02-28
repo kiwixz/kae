@@ -96,6 +96,13 @@ jobs:
       matrix:
         build_type: [Debug, Release]
         toolchain: [llvm, msvc]
+        include:
+          - toolchain: llvm
+            cc: clang
+            cxx: clang++
+          - toolchain: msvc
+            cc: cl
+            cxx: cl
     runs-on: windows-latest
     defaults:
       run:
@@ -126,6 +133,9 @@ jobs:
           echo ::add-matcher::.github/problem_matchers.json
 
       - name: Configure
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
         run: |
           call "%VCVARS%"
           set "PATH=C:\\Program Files\\LLVM\\bin;%PATH%"
