@@ -1,5 +1,7 @@
 #include "kae/thread_pool.h"
 
+#include "kae/os.h"
+
 namespace kae {
 
 ThreadPool::ThreadPool(size_t nr_threads)
@@ -20,7 +22,8 @@ size_t ThreadPool::size() const
 void ThreadPool::extend(size_t nr_threads)
 {
     for (size_t i = 0; i < nr_threads; ++i)
-        workers_.emplace_back([this] {
+        workers_.emplace_back([this, i] {
+            set_thread_name(fmt::format("pool_{}", i));
             while (true) {
                 std::unique_lock lock{tasks_mutex_};
                 tasks_condvar_.wait(lock, [&] {
