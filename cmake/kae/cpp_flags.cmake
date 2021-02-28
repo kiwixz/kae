@@ -36,7 +36,7 @@ macro (cpp_flags_auto arch sanitizers)
         endif ()
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
         set(CMAKE_CXX_FLAGS "-march=${arch}")
-        set(CMAKE_CXX_FLAGS_DEBUG "-D DEBUG -Og -g3 -fno-omit-frame-pointer -fsanitize=${sanitizers}")
+        set(CMAKE_CXX_FLAGS_DEBUG "-D DEBUG -Og -g3 -fno-omit-frame-pointer -fno-optimize-sibling-calls -fsanitize=${sanitizers}")
         set(CMAKE_CXX_FLAGS_RELEASE "-D NDEBUG -O3 -flto")
 
         if (NOT BUILD_SHARED_LIBS)

@@ -7,18 +7,18 @@
 
 namespace kae {
 
-template <typename, typename>
+template <template <typename> typename, typename>
 struct TaskImpl;
 
-template <typename Function, typename Result, typename... Args>
+template <template <typename> typename Function, typename Result, typename... Args>
 struct TaskImpl<Function, Result(Args...)> {
     TaskImpl() = default;
 
-    TaskImpl(Function function)
+    TaskImpl(Function<Result(Args...)> function)
     {
         std::promise<Result> promise;
         future_ = promise.get_future();
-        function_ = [promise = std::move(promise), function = std::move(function)](Args... args) mutable {
+        function_ = [promise = std::move(promise), function = std::move(function)](Args&&... args) mutable {
             try {
                 if constexpr (std::is_same_v<Result, void>) {
                     function(std::forward<Args>(args)...);
@@ -44,21 +44,21 @@ struct TaskImpl<Function, Result(Args...)> {
         return future_;
     }
 
-    void operator()(Args... args) const
+    void operator()(Args&&... args) const
     {
         function_(std::forward<Args>(args)...);
     }
 
 private:
     std::future<Result> future_;
-    Function function_;
+    Function<void(Args...)> function_;
 };
 
 
 template <typename... Args>
-using Task = TaskImpl<Function<Args...>, Args...>;
+using Task = TaskImpl<Function, Args...>;
 
 template <typename... Args>
-using UniqueTask = TaskImpl<UniqueFunction<Args...>, Args...>;
+using UniqueTask = TaskImpl<UniqueFunction, Args...>;
 
 }  // namespace kae
