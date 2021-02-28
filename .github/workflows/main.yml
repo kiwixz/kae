@@ -1,41 +1,49 @@
 on: [pull_request, push]
 
-env:
-  GCC_VERSION: 10
-  LLVM_VERSION: 11
-
 jobs:
-  build_debian:
+  build_fedora:
     strategy:
       fail-fast: false
       matrix:
         build_type: [Debug, Release]
         toolchain: [llvm, gcc]
         include:
-          - toolchain: llvm
-            cc: clang-$LLVM_VERSION
-            cxx: clang++-$LLVM_VERSION
-            cxx_packages: clang-$LLVM_VERSION libstdc++-$GCC_VERSION-dev lld-$LLVM_VERSION llvm-$LLVM_VERSION
-          - toolchain: gcc
-            cc: gcc-$GCC_VERSION
-            cxx: g++-$GCC_VERSION
-            cxx_packages: g++-$GCC_VERSION
+          - build_type: Debug
+            toolchain: llvm
+            cc: clang
+            cxx: clang++
+            cxx_packages: clang compiler-rt lld llvm
+          - build_type: Release
+            toolchain: llvm
+            cc: clang
+            cxx: clang++
+            cxx_packages: clang libstdc++-static lld llvm
+          - build_type: Debug
+            toolchain: gcc
+            cc: gcc
+            cxx: g++
+            cxx_packages: g++ libasan libubsan
+          - build_type: Release
+            toolchain: gcc
+            cc: gcc
+            cxx: g++
+            cxx_packages: g++ libstdc++-static
     runs-on: ubuntu-latest
     container:
-      image: debian:bullseye-slim
+      image: fedora:33
     steps:
       - name: Install system dependencies
         run: |
-          echo "Dpkg::Use-Pty 0;" > "/etc/apt/apt.conf.d/no_pty"
-          apt update
-          apt -y --no-install-recommends install  \
-              git ca-certificates  \
+          dnf -y --setopt=install_weak_deps=0 install  \
+              dnf-plugins-core git  \
               cmake ninja-build python3  \
-              ${{ matrix.cxx_packages }}
+              glibc-devel libstdc++-devel ${{ matrix.cxx_packages }}
+          dnf -y --setopt=install_weak_deps=0 debuginfo-install  \
+              glibc libstdc++
 
       - name: Dump packages versions
         run: |
-          apt list --installed
+          dnf list installed
 
       - name: Checkout
         run: |
@@ -53,7 +61,7 @@ jobs:
         run: |
           export CC="${{ matrix.cc }}"
           export CXX="${{ matrix.cxx }}"
-          cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -D "KAE_ARCH=haswell" -B "build"
+          cmake -G Ninja -B "build" -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -D "KAE_ARCH=haswell"
 
       - name: Build
         run: |
@@ -63,14 +71,16 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v2
         with:
-          name: deb-${{ matrix.toolchain }}-${{ matrix.build_type }}-failed
+          name: fedora-${{ matrix.toolchain }}-${{ matrix.build_type }}-failed
           path: build
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: deb-${{ matrix.toolchain }}-${{ matrix.build_type }}
-          path: build/bin
+          name: fedora-${{ matrix.toolchain }}-${{ matrix.build_type }}
+          path: |
+            build/bin
+            build/lib
 
       - name: Test
         env:
@@ -86,13 +96,6 @@ jobs:
       matrix:
         build_type: [Debug, Release]
         toolchain: [llvm, msvc]
-        include:
-          - toolchain: llvm
-            cc: clang
-            cxx: clang++
-          - toolchain: msvc
-            cc: cl
-            cxx: cl
     runs-on: windows-latest
     defaults:
       run:
@@ -103,7 +106,7 @@ jobs:
       - name: Install system dependencies
         if: matrix.toolchain == 'llvm'
         run: |
-          choco install llvm --version=%LLVM_VERSION%.0.0
+          choco install llvm --version=11.0.1
 
       - name: Dump tools versions
         run: |
@@ -111,6 +114,7 @@ jobs:
           git --version
           cmake --version
           ninja --version
+          if "${{ matrix.toolchain }}" == "llvm" ( clang --version ) else ( cl )
 
       - name: Checkout
         run: |
@@ -122,9 +126,6 @@ jobs:
           echo ::add-matcher::.github/problem_matchers.json
 
       - name: Configure
-        env:
-          CC: ${{ matrix.cc }}
-          CXX: ${{ matrix.cxx }}
         run: |
           call "%VCVARS%"
           set "PATH=C:\\Program Files\\LLVM\\bin;%PATH%"
@@ -139,14 +140,16 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v2
         with:
-          name: win-${{ matrix.toolchain }}-${{ matrix.build_type }}-failed
+          name: windows-${{ matrix.toolchain }}-${{ matrix.build_type }}-failed
           path: build
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: win-${{ matrix.toolchain }}-${{ matrix.build_type }}
-          path: build/bin
+          name: windows-${{ matrix.toolchain }}-${{ matrix.build_type }}
+          path: |
+            build/bin
+            build/lib
 
       - name: Test
         run: |
@@ -157,39 +160,34 @@ jobs:
   clang_format:
     runs-on: ubuntu-latest
     container:
-      image: debian:bullseye-slim
+      image: fedora:33
     steps:
       - name: Install system dependencies
         run: |
-          echo "Dpkg::Use-Pty 0;" > "/etc/apt/apt.conf.d/no_pty"
-          apt update
-          apt -y --no-install-recommends install  \
-              git ca-certificates  \
+          dnf -y --setopt=install_weak_deps=0 install  \
+              git  \
               cmake ninja-build python3  \
-              clang-$LLVM_VERSION clang-format-$LLVM_VERSION
+              clang glibc-devel libstdc++-devel clang-tools-extra lld
 
       - name: Dump packages versions
         run: |
-          apt list --installed
+          dnf list installed
 
       - name: Checkout
         run: |
           git clone "https://github.com/${{ github.repository }}" "./"
           git checkout "${{ github.sha }}"
 
-      - name: Configure
-        run: |
-          export CC="clang-$LLVM_VERSION"
-          export CXX="clang++-$LLVM_VERSION"
-          cmake -G Ninja -B "build"
-
       - name: Register problem matchers
         run: |
           echo "::add-matcher::.github/problem_matchers.json"
 
+      - name: Configure
+        run: |
+          cmake -G Ninja -B "build"
+
       - name: clang-format
         run: |
-          export CLANG_FORMAT="clang-format-$LLVM_VERSION"
           cd build
           ctest -V -R "clang_format"
 
@@ -200,39 +198,34 @@ jobs:
         build_type: [Debug, Release]
     runs-on: ubuntu-latest
     container:
-      image: debian:bullseye-slim
+      image: fedora:33
     steps:
       - name: Install system dependencies
         run: |
-          echo "Dpkg::Use-Pty 0;" > "/etc/apt/apt.conf.d/no_pty"
-          apt update
-          apt -y --no-install-recommends install  \
-              git ca-certificates  \
+          dnf -y --setopt=install_weak_deps=0 install  \
+              git  \
               cmake ninja-build python3  \
-              clang-$LLVM_VERSION libstdc++-$GCC_VERSION-dev clang-tidy-$LLVM_VERSION
+              clang glibc-devel libstdc++-devel clang-tools-extra lld
 
       - name: Dump packages versions
         run: |
-          apt list --installed
+          dnf list installed
 
       - name: Checkout
         run: |
           git clone "https://github.com/${{ github.repository }}" "./"
           git checkout "${{ github.sha }}"
 
-      - name: Configure
-        run: |
-          export CC="clang-$LLVM_VERSION"
-          export CXX="clang++-$LLVM_VERSION"
-          cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -D "KAE_ARCH=haswell" -B "build"
-
       - name: Register problem matchers
         run: |
           echo "::add-matcher::.github/problem_matchers.json"
 
+      - name: Configure
+        run: |
+          cmake -G Ninja -B "build" -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -D "KAE_ARCH=haswell"
+
       - name: clang-tidy
         run: |
-          export CLANG_TIDY="clang-tidy-$LLVM_VERSION"
           cd build
           ctest -V -R "clang_tidy"
 
@@ -250,7 +243,7 @@ jobs:
     steps:
       - name: Install system dependencies
         run: |
-          choco install llvm --version=%LLVM_VERSION%.0.0
+          choco install llvm --version=11.0.1
 
       - name: Dump tools versions
         run: |
@@ -258,6 +251,7 @@ jobs:
           git --version
           cmake --version
           ninja --version
+          clang-tidy --version
 
       - name: Checkout
         run: |
