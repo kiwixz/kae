@@ -11,9 +11,25 @@ TEST_SUITE("thread_pool")
 {
     TEST_CASE("submit")
     {
-        ThreadPool pool{8};
+        ThreadPool pool{4};
 
         CHECK(pool.submit([] { return std::string{"hello"}; }).get() == "hello");
+        CHECK(pool.submit([](const std::string& a) { return a; }, "world").get() == "world");
+
+        pool.submit([ptr = std::make_unique<int>()] {});
+        CHECK(*pool.submit([ptr = std::make_unique<int>()]() mutable -> std::unique_ptr<int> {
+                       *ptr = 72;
+                       return std::move(ptr);
+                   }).get()
+              == 72);
+        CHECK(*pool.submit([ptr = std::make_shared<int>()]() mutable {
+                       *ptr = 91;
+                       return ptr;
+                   }).get()
+              == 91);
+        pool.submit([ptr = std::make_shared<int>()]() mutable {
+            ptr.reset();
+        });
 
         {
             bool pass = false;
@@ -35,15 +51,6 @@ TEST_SUITE("thread_pool")
         }
     }
 
-    TEST_CASE("submit_moveonly")
-    {
-        ThreadPool pool{8};
-
-        pool.submit([ptr = std::make_unique<int>()] {});
-        pool.submit([ptr = std::make_shared<int>()]() mutable {
-            ptr.reset();
-        });
-    }
 
     TEST_CASE("extend")
     {
@@ -57,10 +64,15 @@ TEST_SUITE("thread_pool")
             ++c;
         });
 
+        std::this_thread::sleep_for(std::chrono::milliseconds{10});
+        CHECK(c == 0);
+
         pool.extend(1);
 
         f0.get();
         f1.get();
+
+        CHECK(c == 2);
 
         auto f2 = pool.submit([&] {
             ++c;
