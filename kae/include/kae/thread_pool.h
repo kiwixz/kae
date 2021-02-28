@@ -53,9 +53,7 @@ std::future<std::invoke_result_t<T, Args...>> ThreadPool::submit(T&& callable, A
         if (stopping_)
             throw MAKE_EXCEPTION("trying to add work on stopping thread pool");
 
-        tasks_.emplace([task = std::move(task)] {
-            task();
-        });
+        tasks_.emplace(std::move(task));
     }
 
     tasks_condvar_.notify_one();
