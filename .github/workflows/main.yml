@@ -30,20 +30,18 @@ jobs:
             cxx_packages: g++ libstdc++-static
     runs-on: ubuntu-latest
     container:
-      image: fedora:33
+      image: registry.fedoraproject.org/fedora-minimal:33
     steps:
       - name: Install system dependencies
         run: |
-          dnf -y --setopt=install_weak_deps=0 install  \
+          microdnf --nodocs --setopt=install_weak_deps=0 install  \
               dnf-plugins-core git  \
               cmake ninja-build python3  \
               glibc-devel libstdc++-devel ${{ matrix.cxx_packages }}
-          dnf -y --setopt=install_weak_deps=0 debuginfo-install  \
-              glibc libstdc++
 
       - name: Dump packages versions
         run: |
-          dnf list installed
+          rpm -qa
 
       - name: Checkout
         run: |
@@ -170,18 +168,18 @@ jobs:
   clang_format:
     runs-on: ubuntu-latest
     container:
-      image: fedora:33
+      image: registry.fedoraproject.org/fedora-minimal:33
     steps:
       - name: Install system dependencies
         run: |
-          dnf -y --setopt=install_weak_deps=0 install  \
+          microdnf --nodocs --setopt=install_weak_deps=0 install  \
               git  \
               cmake ninja-build python3  \
               clang glibc-devel libstdc++-devel clang-tools-extra lld
 
       - name: Dump packages versions
         run: |
-          dnf list installed
+          rpm -qa
 
       - name: Checkout
         run: |
@@ -208,18 +206,18 @@ jobs:
         build_type: [Debug, Release]
     runs-on: ubuntu-latest
     container:
-      image: fedora:33
+      image: registry.fedoraproject.org/fedora-minimal:33
     steps:
       - name: Install system dependencies
         run: |
-          dnf -y --setopt=install_weak_deps=0 install  \
+          microdnf --nodocs --setopt=install_weak_deps=0 install  \
               git  \
               cmake ninja-build python3  \
               clang glibc-devel libstdc++-devel clang-tools-extra lld
 
       - name: Dump packages versions
         run: |
-          dnf list installed
+          rpm -qa
 
       - name: Checkout
         run: |
