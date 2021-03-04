@@ -35,7 +35,7 @@ jobs:
       - name: Install system dependencies
         run: |
           microdnf --nodocs --setopt=install_weak_deps=0 install  \
-              dnf-plugins-core git  \
+              git  \
               cmake ninja-build python3  \
               glibc-devel libstdc++-devel ${{ matrix.cxx_packages }}
 
