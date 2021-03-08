@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 
-
 option(KAE_TESTS "Build tests" OFF)
-
 
 project("kae"
     VERSION 0.0.0
@@ -25,7 +23,7 @@ endif ()
 if (KAE_TESTS)
     file(GLOB_RECURSE test_src CONFIGURE_DEPENDS "test/*.cpp")
     add_executable("kae_test" ${test_src})
-    target_link_libraries("kae_test" PRIVATE "kae" "doctest::doctest_with_main")
+    target_link_libraries("kae_test" PRIVATE "kae" "doctest_with_main")
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
         target_compile_options("kae_test" PRIVATE "-fno-sanitize-recover=all")
     endif ()
