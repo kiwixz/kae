@@ -1,5 +1,6 @@
 #include "kae/logging.h"
 
+#include <mutex>
 #include <shared_mutex>
 #include <unordered_map>
 
