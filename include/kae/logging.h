@@ -4,7 +4,8 @@
 
 namespace kae {
 
-enum class LogLevel {
+enum class LogLevel
+{
     debug,
     info,
     warning,

@@ -7,7 +7,8 @@
 
 namespace kae::any_detail {
 
-enum class ProxyOp {
+enum class ProxyOp
+{
     destroy,
     copy,
     move,
